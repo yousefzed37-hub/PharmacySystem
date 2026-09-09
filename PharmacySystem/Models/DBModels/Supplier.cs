@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PharmacySystem.Interface;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PharmacySystem.Models.DBModels
 {
-    public class Supplier
+    public class Supplier : ISoftDelete
     {
        
         public int Id { get; set; }
@@ -17,6 +18,8 @@ namespace PharmacySystem.Models.DBModels
         public string? Address { get; set; }
 
         public string? ImageUrl { get; set; }
+        
+        public bool IsDeleted { get; set; }
 
         public ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();
         

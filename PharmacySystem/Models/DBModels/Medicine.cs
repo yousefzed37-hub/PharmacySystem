@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PharmacySystem.Interface;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Net.ServerSentEvents;
 
 namespace PharmacySystem.Models.DBModels
 {
-    public class Medicine
+    public class Medicine : ISoftDelete
     {
          public int Id { get; set; }
 

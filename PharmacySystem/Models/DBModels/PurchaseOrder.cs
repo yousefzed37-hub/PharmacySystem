@@ -17,4 +17,4 @@ namespace PharmacySystem.Models.DBModels
         public ICollection<PurchaseOrderItem> PurchaseOrderItems { get; set; } = new List<PurchaseOrderItem>();
     }
 }
-}
+
