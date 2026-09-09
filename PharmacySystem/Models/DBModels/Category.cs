@@ -10,7 +10,9 @@ namespace PharmacySystem.Models
       
         public string Name { get; set; } = string.Empty;
 
-       
+        public bool IsDeleted { get; set; } = false;
+
+
         public string? Description { get; set; }
          public ICollection<Medicine> Medicines { get; set; } = new List<Medicine>();
     }

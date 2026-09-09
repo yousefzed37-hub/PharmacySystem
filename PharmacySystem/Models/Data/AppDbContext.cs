@@ -55,6 +55,8 @@ namespace PharmacySystem.Models.Data
             // تفعيل الـ Soft Delete Query Filter لأي Entity تطبق ISoftDelete
             modelBuilder.Entity<Medicine>().HasQueryFilter(m => !m.IsDeleted);
             modelBuilder.Entity<Supplier>().HasQueryFilter (m => !m.IsDeleted);
+            modelBuilder.Entity<Category>().HasQueryFilter(m => !m.IsDeleted);
+
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
