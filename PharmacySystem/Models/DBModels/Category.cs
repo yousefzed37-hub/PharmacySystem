@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PharmacySystem.Models.DBModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace PharmacySystem.Models
 {

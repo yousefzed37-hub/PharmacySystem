@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Net.ServerSentEvents;
 
-namespace PharmacySystem.Models
+namespace PharmacySystem.Models.DBModels
 {
     public class Medicine
     {
