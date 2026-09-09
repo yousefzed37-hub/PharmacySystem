@@ -6,39 +6,24 @@ namespace PharmacySystem.Models.DBModels
 {
     public class Medicine
     {
-        [Key]
-        public int Id { get; set; }
+         public int Id { get; set; }
 
-        [Required]
-        [ForeignKey(nameof(Category))]
-        public int CategoryId { get; set; }
+         public int CategoryId { get; set; }
 
-        [Required]
-        [MaxLength(100)]
-        public string Name { get; set; } = string.Empty;
+         public string Name { get; set; } = string.Empty;
+         public decimal CostPrice { get; set; }
 
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal CostPrice { get; set; }
+         public decimal SalePrice { get; set; }
 
-        [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal SalePrice { get; set; }
+         public int StockQuantity { get; set; }
 
-        [Required]
-        public int StockQuantity { get; set; }
+         public int ReorderLevel { get; set; }
 
-        [Required]
-        public int ReorderLevel { get; set; }
-
-        [Required]
-        [Column(TypeName = "date")]
-        public DateTime ExpiryDate { get; set; }
+         public DateTime ExpiryDate { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 
-        // Navigation Properties
-        public Category? Category { get; set; }
+         public Category? Category { get; set; }
         public ICollection<SaleItem> SaleItems { get; set; } = new List<SaleItem>();
         public ICollection<PurchaseOrderItem> PurchaseOrderItems { get; set; } = new List<PurchaseOrderItem>();
     }
