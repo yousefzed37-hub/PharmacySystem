@@ -2,7 +2,7 @@
 
 namespace PharmacySystem.ViewModels
 {
-    public class CreateSaleViewModel
+    public class SaleViewModel
     {
         [Display(Name = "Cashier / User ID")]
         public string UserId { get; set; } = string.Empty;
@@ -14,7 +14,7 @@ namespace PharmacySystem.ViewModels
         [Display(Name = "Sale Items")]
         [Required(ErrorMessage = "The sale must contain at least one item.")]
         [MinLength(1, ErrorMessage = "Please add at least one medicine to the invoice.")]
-        public List<CreateSaleItemViewModel> Items { get; set; } = new List<CreateSaleItemViewModel>();
+        public List<SaleItemViewModel> Items { get; set; } = new List<SaleItemViewModel>();
     }
 
     public class SaleDetailsViewModel

@@ -2,7 +2,7 @@
 
 namespace PharmacySystem.ViewModels
 {
-    public class CreateSaleItemViewModel    
+    public class SaleItemViewModel    
     {
         [Display(Name = "Medicine")]
         [Required(ErrorMessage = "Please select a medicine.")]
