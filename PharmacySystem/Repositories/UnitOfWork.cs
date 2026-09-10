@@ -2,8 +2,9 @@
 using PharmacySystem.Models;
 using PharmacySystem.Models.DBModels;
 using PharmacySystem.Interface;
-using PharmacySystem.Models.Data;
+
 using PharmacyManagement.Core.Interfaces;
+using PharmacySystem.Models.Data;
 
 namespace PharmacyManagement.Infrastructure.Repositories
 {

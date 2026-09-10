@@ -15,8 +15,20 @@ namespace PharmacySystem
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
+
+
             builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 6;
+            }).AddEntityFrameworkStores<AppDbContext>();
+
 
             var app = builder.Build();
 
@@ -30,7 +42,7 @@ namespace PharmacySystem
 
             app.UseHttpsRedirection();
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
