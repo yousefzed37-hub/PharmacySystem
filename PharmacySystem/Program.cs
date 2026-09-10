@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using PharmacyManagement.Core.Interfaces;
+using PharmacyManagement.Infrastructure.Repositories;
 using PharmacySystem.Models.Data;
 
 namespace PharmacySystem
@@ -13,6 +15,8 @@ namespace PharmacySystem
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
 
