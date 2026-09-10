@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -8,9 +8,13 @@
 
   <ItemGroup>
     <Compile Remove="Models\ViewModels\**" />
+    <Compile Remove="Models\View\**" />
     <Content Remove="Models\ViewModels\**" />
+    <Content Remove="Models\View\**" />
     <EmbeddedResource Remove="Models\ViewModels\**" />
+    <EmbeddedResource Remove="Models\View\**" />
     <None Remove="Models\ViewModels\**" />
+    <None Remove="Models\View\**" />
   </ItemGroup>
 
   <ItemGroup>
