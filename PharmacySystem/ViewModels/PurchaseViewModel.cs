@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace PharmacySystem.Models.ViewModels
 {
-    public class Purchase
+    public class PurchaseViewModel
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Please select a supplier")]
