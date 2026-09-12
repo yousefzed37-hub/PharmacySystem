@@ -9,11 +9,11 @@ using PharmacySystem.ViewModels;
 namespace PharmacySystem.Controllers
 {
     //[Authorize(Roles = $"{AppConstants.Roles.Admin},{AppConstants.Roles.Pharmacist}")]
-    public class PurchaseOrdersController : Controller
+    public class PurchaseOrderController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public PurchaseOrdersController(IUnitOfWork unitOfWork)
+        public PurchaseOrderController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

@@ -9,7 +9,7 @@ namespace PharmacySystem.Models.DBModels
         public string InvoiceNumber { get; set; } = string.Empty;
         public DateTime SaleDate { get; set; } = DateTime.UtcNow;
         public decimal SubTotal { get; set; }
-        public decimal Discount { get; set; }
+        public decimal? Discount { get; set; }
         public decimal TotalAmount { get; set; }
 
         public ICollection<SaleItem> SaleItems { get; set; } = new List<SaleItem>();

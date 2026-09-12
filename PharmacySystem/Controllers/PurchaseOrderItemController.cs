@@ -10,11 +10,11 @@ namespace PharmacySystem.Controllers
 {
 
     //[Authorize(Roles = $"{AppConstants.Roles.Admin},{AppConstants.Roles.Pharmacist}")]
-    public class PurchaseOrderItemsController : Controller
+    public class PurchaseOrderItemController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public PurchaseOrderItemsController(IUnitOfWork unitOfWork)
+        public PurchaseOrderItemController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

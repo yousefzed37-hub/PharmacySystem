@@ -8,7 +8,7 @@ using PharmacySystem.ViewModels;
 namespace PharmacySystem.Controllers
 {
     //[Authorize(Roles = $"{AppConstants.Roles.Admin},{AppConstants.Roles.Pharmacist}")]
-    public class SuppliersController : Controller
+    public class SupplierController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         //private readonly IFileService _fileService;
@@ -18,7 +18,7 @@ namespace PharmacySystem.Controllers
         //    _unitOfWork = unitOfWork;
         //    _fileService = fileService;
         //}
-        public SuppliersController(IUnitOfWork unitOfWork)
+        public SupplierController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             

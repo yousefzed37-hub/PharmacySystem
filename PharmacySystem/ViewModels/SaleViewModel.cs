@@ -9,7 +9,7 @@ namespace PharmacySystem.ViewModels
 
         [Display(Name = "Discount")]
         [Range(0, double.MaxValue, ErrorMessage = "Discount cannot be negative.")]
-        public decimal Discount { get; set; } = 0;
+        public decimal? Discount { get; set; } = 0;
 
         [Display(Name = "Sale Items")]
         [Required(ErrorMessage = "The sale must contain at least one item.")]
@@ -35,7 +35,7 @@ namespace PharmacySystem.ViewModels
         public decimal SubTotal { get; set; }
 
         [Display(Name = "Discount")]
-        public decimal Discount { get; set; }
+        public decimal? Discount { get; set; }
 
         [Display(Name = "Total Amount")]
         public decimal TotalAmount { get; set; }

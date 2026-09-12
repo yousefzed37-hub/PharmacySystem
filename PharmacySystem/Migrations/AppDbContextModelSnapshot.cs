@@ -287,7 +287,7 @@ namespace PharmacySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Discount")
+                    b.Property<decimal?>("Discount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 

@@ -120,7 +120,7 @@ namespace PharmacySystem.Controllers
 
             // تجميع الحسابات النهائية
             sale.SubTotal = subTotal;
-            sale.TotalAmount = subTotal - model.Discount;
+            sale.TotalAmount = subTotal - (model.Discount ?? 0);
 
             // حفظ الفاتورة وتغييرات المخزون في عملية واحدة محصنة (Transaction)
             await _unitOfWork.Sales.AddAsync(sale);
