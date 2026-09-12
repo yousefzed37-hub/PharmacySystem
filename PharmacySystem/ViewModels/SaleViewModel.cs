@@ -5,7 +5,7 @@ namespace PharmacySystem.ViewModels
     public class SaleViewModel
     {
         [Display(Name = "Cashier / User ID")]
-        public string UserId { get; set; } = string.Empty;
+        public string? UserId { get; set; } = string.Empty;
 
         [Display(Name = "Discount")]
         [Range(0, double.MaxValue, ErrorMessage = "Discount cannot be negative.")]
