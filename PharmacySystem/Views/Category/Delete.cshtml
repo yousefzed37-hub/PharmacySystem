@@ -1,0 +1,35 @@
+﻿@model PharmacyManagement.Web.ViewModels.Categories.CategoryIndexViewModel
+
+@{
+    ViewData["Title"] = "Delete Category";
+}
+
+<div class="container mt-4">
+    <h2 class="text-danger">Delete Confirmation</h2>
+    <h3>Are you sure you want to delete this category?</h3>
+    <hr />
+
+    <div class="card mt-4 border-danger">
+        <div class="card-header bg-danger text-white">
+            Category Details
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Category Name</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <!-- The form submits a POST request to the Delete action -->
+        <form asp-action="Delete" method="post">
+            @Html.AntiForgeryToken()
+            <!-- Hidden ID to know what to delete -->
+            <input type="hidden" asp-for="Id" />
+
+            <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel and Return</a>
+        </form>
+    </div>
+</div>
