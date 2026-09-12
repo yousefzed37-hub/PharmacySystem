@@ -1,0 +1,41 @@
+﻿@model IEnumerable<PharmacyManagement.Web.ViewModels.Categories.CategoryIndexViewModel>
+
+@{
+    ViewData["Title"] = "Categories List";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <h2>Categories List</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <!-- Explicit link to the Create GET Action -->
+            <a asp-controller="Category" asp-action="Create" class="btn btn-primary">
+                Add New Category
+            </a>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Category Name</th>
+                <th style="width: 200px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.Name</td>
+                    <td>
+                        <!-- Action links passing the ID explicitly to Edit and Delete actions -->
+                        <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

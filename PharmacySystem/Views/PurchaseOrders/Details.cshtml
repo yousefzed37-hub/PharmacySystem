@@ -1,0 +1,28 @@
+﻿@model PharmacySystem.ViewModels.PurchaseOrderViewModel
+
+@{
+    ViewData["Title"] = "Purchase Order Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Purchase Order #@Model.Id</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Supplier:</dt>
+                <dd class="col-sm-9">@Model.SupplierName</dd>
+
+                <dt class="col-sm-3">Order Date:</dt>
+                <dd class="col-sm-9">@Model.OrderDate.ToString("yyyy-MM-dd")</dd>
+            </dl>
+        </div>
+        <div class="card-footer d-flex justify-content-between bg-light">
+            <a asp-action="Index" class="btn btn-outline-secondary">Back to Orders</a>
+            <a asp-controller="PurchaseOrderItems" asp-action="Index" asp-route-orderId="@Model.Id" class="btn btn-primary">
+                View & Manage Items
+            </a>
+        </div>
+    </div>
+</div>
