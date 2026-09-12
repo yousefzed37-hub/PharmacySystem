@@ -12,10 +12,10 @@ namespace PharmacyManagement.Web.ViewModels.Medicines
         [Display(Name = "Medicine Name")]
         public string Name { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Barcode is required.")]
-        [StringLength(50, MinimumLength = 3, ErrorMessage = "Barcode must be between 3 and 50 characters.")]
-        [Display(Name = "Barcode")]
-        public string Barcode { get; set; } = string.Empty;
+        //[Required(ErrorMessage = "Barcode is required.")]
+        //[StringLength(50, MinimumLength = 3, ErrorMessage = "Barcode must be between 3 and 50 characters.")]
+        ////[Display(Name = "Barcode")]
+        //public string Barcode { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Please select a category.")]
         [Display(Name = "Category")]
@@ -51,8 +51,8 @@ namespace PharmacyManagement.Web.ViewModels.Medicines
     {
         public int Id { get; set; }
 
-        [Display(Name = "Barcode")]
-        public string Barcode { get; set; } = string.Empty;
+        //[Display(Name = "Barcode")]
+        //public string Barcode { get; set; } = string.Empty;
 
         [Display(Name = "Medicine Name")]
         public string Name { get; set; } = string.Empty;

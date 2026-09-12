@@ -1,0 +1,39 @@
+﻿@model PharmacyManagement.Web.ViewModels.Medicines.MedicineIndexViewModel
+
+@{
+    ViewData["Title"] = "Delete Medicine";
+}
+
+<div class="container mt-4">
+    <h2 class="text-danger">Delete Confirmation</h2>
+    <h3>Are you sure you want to delete this medicine?</h3>
+    <hr />
+
+    <div class="card mt-4">
+        <div class="card-header bg-danger text-white">
+            Medicine Details
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Medicine Name</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">Category</dt>
+                <dd class="col-sm-9">@Model.CategoryName</dd>
+
+                <dt class="col-sm-3">Selling Price</dt>
+                <dd class="col-sm-9">$@Model.SellingPrice</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <form asp-action="Delete" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel and Return</a>
+        </form>
+    </div>
+</div>
