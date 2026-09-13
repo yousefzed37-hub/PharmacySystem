@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PharmacyManagement.Core.Interfaces;
 using PharmacySystem.Models;
@@ -6,6 +7,7 @@ using System.Diagnostics;
 
 namespace PharmacySystem.Controllers
 {
+    [Authorize(Roles ="Admin")]
     public class HomeController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
