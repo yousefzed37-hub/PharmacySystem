@@ -4,95 +4,222 @@
     ViewData["Title"] = "Suppliers";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-primary"><i class="bi bi-truck"></i> Suppliers</h2>
-        <a asp-action="Create" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Add New Supplier
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h3 class="fw-bold mb-1" style="color: #0d9488;">
+                <i class="bi bi-truck me-2"></i>Suppliers & Vendors
+            </h3>
+            <p class="text-muted mb-0">Manage pharmaceutical companies, distributors, and supply partners.</p>
+        </div>
+        <a asp-action="Create" class="btn text-white px-4 py-2 shadow-sm rounded-3" style="background-color: #0d9488;">
+            <i class="bi bi-plus-lg me-1"></i> Add New Supplier
         </a>
     </div>
 
+    <!-- Alert Messages -->
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
-    <div class="card shadow-sm border-0">
+    <!-- Search Toolbar -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+        <div class="card-body p-3">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" id="supplierSearchInput" class="form-control bg-light border-start-0" placeholder="Search by supplier name, email, or phone number..." />
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex justify-content-end">
+                    <button type="button" id="btnResetSearch" class="btn btn-light border text-muted px-4 w-100">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suppliers Table Card -->
+    <div class="card border-0 shadow-sm rounded-3 bg-white">
         <div class="card-body p-0">
-            <table class="table table-hover table-striped mb-0 align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Supplier Name</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th class="text-center">Total Orders</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var item in Model)
-                        {
-                            <tr id="row-@item.Id">
-                                <td class="fw-bold">@item.Name</td>
-                                <td>@item.Phone</td>
-                                <td>@(string.IsNullOrEmpty(item.Email) ? "—" : item.Email)</td>
-                                <td class="text-center">
-                                    <span class="badge bg-secondary">@item.TotalPurchaseOrders</span>
-                                </td>
-                                <td class="text-center">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">
-                                        Edit
-                                    </a>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteSupplier(@item.Id)">
-                                        Delete
-                                    </button>
-                                </td>
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="suppliersTable">
+                        <thead class="table-light text-secondary small text-uppercase">
+                            <tr>
+                                <th class="ps-4 py-3">#ID</th>
+                                <th class="py-3">Company Name</th>
+                                <th class="py-3">Phone</th>
+                                <th class="py-3">Email</th>
+                                <th class="py-3 text-center">Total Orders</th>
+                                <th class="py-3 text-center pe-4">Actions</th>
                             </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">No suppliers found.</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var supplier in Model)
+                            {
+                                <tr class="supplier-row">
+                                    <td class="ps-4 fw-bold text-muted">
+                                        #SUP-@supplier.Id.ToString("D3")
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background-color: #f0fdfa; color: #0d9488;">
+                                                <i class="bi bi-building fs-5"></i>
+                                            </div>
+                                            <span class="fw-bold text-dark supplier-name">@supplier.Name</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="supplier-phone text-dark">
+                                            <i class="bi bi-telephone me-1 text-muted small"></i>@supplier.Phone
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="supplier-email text-muted">
+                                            @if (!string.IsNullOrEmpty(supplier.Email))
+                                            {
+                                                <span><i class="bi bi-envelope me-1 small"></i>@supplier.Email</span>
+                                            }
+                                            else
+                                            {
+                                                <span>—</span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill px-3 py-2" style="background-color: #f0fdfa; color: #0d9488; border: 1px solid #ccfbf1;">
+                                            @supplier.TotalPurchaseOrders Orders
+                                        </span>
+                                    </td>
+                                    <td class="text-center pe-4">
+                                        <div class="btn-group shadow-0">
+                                            <a asp-action="Edit" asp-route-id="@supplier.Id" class="btn btn-sm btn-outline-secondary" title="Edit Supplier">
+                                                <i class="bi bi-pencil-square text-primary"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary btn-delete-supplier"
+                                                    data-id="@supplier.Id"
+                                                    data-name="@supplier.Name"
+                                                    title="Delete Supplier">
+                                                <i class="bi bi-trash text-danger"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: #f0fdfa; color: #0d9488;">
+                        <i class="bi bi-truck fs-1"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Suppliers Registered</h5>
+                    <p class="text-muted">Start adding suppliers and pharmaceutical vendors to your database.</p>
+                    <a asp-action="Create" class="btn text-white px-4 mt-2 rounded-3" style="background-color: #0d9488;">
+                        <i class="bi bi-plus-lg me-1"></i> Add First Supplier
+                    </a>
+                </div>
+            }
         </div>
     </div>
 </div>
 
-@Html.AntiForgeryToken()
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteSupplierModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-3">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Supplier
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3">
+                <p class="text-muted mb-2">Are you sure you want to delete supplier <strong id="modalSupplierName" class="text-dark"></strong>?</p>
+                <div class="alert alert-warning py-2 px-3 small border-0 rounded-2 mb-0">
+                    <i class="bi bi-info-circle me-1"></i> Note: Suppliers with existing purchase orders cannot be deleted.
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="btnConfirmDeleteSupplier" class="btn btn-danger px-4">Confirm Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
-        function deleteSupplier(id) {
-            if (!confirm('Are you sure you want to delete this supplier?')) return;
+        $(document).ready(function () {
+            let supplierIdToDelete = 0;
 
-            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            // Live filter
+            $('#supplierSearchInput').on('keyup', function () {
+                const searchVal = $(this).val().toLowerCase();
 
-            fetch(`/Suppliers/Delete/${id}`, {
-                method: 'POST',
-                headers: {
-                    'RequestVerificationToken': token,
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        const row = document.getElementById(`row-${id}`);
-                        if (row) row.remove();
+                $('.supplier-row').each(function () {
+                    const name = $(this).find('.supplier-name').text().toLowerCase();
+                    const phone = $(this).find('.supplier-phone').text().toLowerCase();
+                    const email = $(this).find('.supplier-email').text().toLowerCase();
+
+                    if (name.includes(searchVal) || phone.includes(searchVal) || email.includes(searchVal)) {
+                        $(this).show();
                     } else {
-                        alert(data.message);
+                        $(this).hide();
                     }
-                })
-                .catch(() => alert('An error occurred while deleting the supplier.'));
-        }
+                });
+            });
+
+            $('#btnResetSearch').on('click', function () {
+                $('#supplierSearchInput').val('');
+                $('.supplier-row').show();
+            });
+
+            // Delete modal handler
+            $('.btn-delete-supplier').on('click', function () {
+                supplierIdToDelete = $(this).data('id');
+                const supplierName = $(this).data('name');
+
+                $('#modalSupplierName').text(supplierName);
+                const modal = new bootstrap.Modal(document.getElementById('deleteSupplierModal'));
+                modal.show();
+            });
+
+            $('#btnConfirmDeleteSupplier').on('click', function () {
+                if (!supplierIdToDelete) return;
+
+                $.ajax({
+                    url: '/Suppliers/Delete/' + supplierIdToDelete,
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                            $('#deleteSupplierModal').modal('hide');
+                        }
+                    },
+                    error: function () {
+                        alert('An unexpected error occurred while deleting.');
+                        $('#deleteSupplierModal').modal('hide');
+                    }
+                });
+            });
+        });
     </script>
 }

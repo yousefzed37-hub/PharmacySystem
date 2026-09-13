@@ -1,52 +1,286 @@
 ﻿@model PharmacySystem.ViewModels.PurchaseOrderViewModel
 
 @{
-    ViewData["Title"] = "Create Purchase Order";
+    ViewData["Title"] = "New Purchase Order";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">New Purchase Order</h5>
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1" style="color: #0d9488;">
+                <i class="bi bi-cart-plus-fill me-2"></i>Receive New Stock
+            </h3>
+            <p class="text-muted mb-0">Record items arriving from suppliers and instantly update pharmacy stock.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary px-3 py-2 rounded-3">
+            <i class="bi bi-arrow-left me-1"></i> Back to Orders
+        </a>
+    </div>
+
+    <form asp-action="Create" method="post" id="purchaseOrderForm">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 shadow-sm rounded-3 mb-4"></div>
+
+        <div class="row g-4">
+            <!-- Left Column: Supplier & Invoice Meta -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
+                    <div class="card-header bg-white py-3 border-0">
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-info-circle me-2" style="color: #0d9488;"></i>Order Details
+                        </h5>
+                    </div>
+                    <div class="card-body pt-0">
+                        <!-- Supplier -->
+                        <div class="mb-3">
+                            <label asp-for="SupplierId" class="form-label fw-semibold text-secondary small"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-truck"></i></span>
+                                <select asp-for="SupplierId" asp-items="Model.SuppliersList" class="form-select bg-light border-start-0" id="supplierSelect">
+                                    <option value="">-- Choose Supplier --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="SupplierId" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Date -->
+                        <div class="mb-3">
+                            <label asp-for="OrderDate" class="form-label fw-semibold text-secondary small"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-calendar-event"></i></span>
+                                <input asp-for="OrderDate" class="form-control bg-light border-start-0" type="date" />
+                            </div>
+                            <span asp-validation-for="OrderDate" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label fw-semibold text-secondary small"></label>
+                            <textarea asp-for="Notes" class="form-control bg-light" rows="4" placeholder="Add supplier invoice number or notes..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Summary Amount Box -->
+                        <div class="p-3 rounded-3 mt-4 text-center" style="background-color: #f0fdfa; border: 1px dashed #0d9488;">
+                            <span class="text-muted small text-uppercase fw-bold">Total Invoiced Amount</span>
+                            <h2 class="fw-bolder mb-0 mt-1" style="color: #0d9488;" id="grandTotalDisplay">$0.00</h2>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn text-white btn-lg shadow-sm rounded-3 py-2" style="background-color: #0d9488;">
+                                <i class="bi bi-check-circle me-1"></i> Confirm & Receive Stock
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Create" method="post">
-                        @Html.AntiForgeryToken()
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            </div>
 
-                        <div class="mb-3">
-                            <label asp-for="SupplierId" class="form-label fw-bold"></label>
-                            <select asp-for="SupplierId" asp-items="Model.SuppliersList" class="form-select">
-                                <option value="">-- Select Supplier --</option>
-                            </select>
-                            <span asp-validation-for="SupplierId" class="text-danger"></span>
+            <!-- Right Column: Add Items & Dynamic Cart -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-3 bg-white">
+                    <div class="card-header bg-white py-3 border-0">
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-capsule me-2" style="color: #0d9488;"></i>Purchased Items
+                        </h5>
+                    </div>
+                    <div class="card-body pt-0">
+                        <!-- Quick Add Bar -->
+                        <div class="p-3 rounded-3 mb-4" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-5">
+                                    <label class="form-label small fw-bold text-secondary">Medicine</label>
+                                    <select id="quickMedicine" asp-items="Model.MedicinesList" class="form-select">
+                                        <option value="">-- Choose Medicine --</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label small fw-bold text-secondary">Qty</label>
+                                    <input type="number" id="quickQty" class="form-control" min="1" value="1" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold text-secondary">Unit Cost ($)</label>
+                                    <input type="number" id="quickPrice" class="form-control" min="0.01" step="0.01" placeholder="0.00" />
+                                </div>
+                                <div class="col-md-2 d-grid">
+                                    <button type="button" class="btn text-white fw-bold" style="background-color: #0d9488;" id="btnAddItem">
+                                        <i class="bi bi-plus-lg me-1"></i> Add
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="OrderDate" class="form-label fw-bold"></label>
-                            <input asp-for="OrderDate" class="form-control" type="date" />
-                            <span asp-validation-for="OrderDate" class="text-danger"></span>
+                        <!-- Table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" id="itemsTable">
+                                <thead class="table-light text-secondary small text-uppercase">
+                                    <tr>
+                                        <th style="width: 5%;">#</th>
+                                        <th style="width: 40%;">Medicine</th>
+                                        <th style="width: 15%;" class="text-center">Quantity</th>
+                                        <th style="width: 20%;" class="text-end">Unit Cost</th>
+                                        <th style="width: 15%;" class="text-end">Subtotal</th>
+                                        <th style="width: 5%;" class="text-center">Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orderItemsBody">
+                                    <!-- Dynamic Items Populated By JS -->
+                                </tbody>
+                            </table>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Notes" class="form-label fw-bold"></label>
-                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Optional notes..."></textarea>
-                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        <!-- Empty State Box -->
+                        <div id="emptyItemsAlert" class="text-center py-5">
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px; background-color: #f1f5f9; color: #94a3b8;">
+                                <i class="bi bi-inbox fs-2"></i>
+                            </div>
+                            <p class="text-muted mb-0">No items added to this order yet. Select a medicine and press <strong>Add</strong>.</p>
                         </div>
-
-                        <div class="d-flex justify-content-between pt-2">
-                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                            <button type="submit" class="btn btn-primary">Save & Add Items</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            let itemIndex = 0;
+
+            $('#btnAddItem').on('click', function () {
+                const medSelect = $('#quickMedicine');
+                const medId = medSelect.val();
+                const medName = medSelect.find('option:selected').text();
+                const qty = parseInt($('#quickQty').val());
+                const price = parseFloat($('#quickPrice').val());
+
+                if (!medId) {
+                    alert('Please choose a medicine.');
+                    medSelect.focus();
+                    return;
+                }
+
+                if (isNaN(qty) || qty <= 0) {
+                    alert('Enter a valid quantity (min: 1).');
+                    $('#quickQty').focus();
+                    return;
+                }
+
+                if (isNaN(price) || price <= 0) {
+                    alert('Enter a valid purchase unit price.');
+                    $('#quickPrice').focus();
+                    return;
+                }
+
+                // Check for duplicate items
+                let exists = false;
+                $('input[name$=".MedicineId"]').each(function () {
+                    if ($(this).val() === medId) {
+                        exists = true;
+                    }
+                });
+
+                if (exists) {
+                    alert('This medicine is already in the list. Remove it first to update quantity.');
+                    return;
+                }
+
+                const subTotal = (qty * price).toFixed(2);
+
+                const rowHtml = `
+                            <tr class="item-row">
+                                <td class="row-number fw-bold text-muted"></td>
+                                <td>
+                                    <span class="fw-semibold text-dark">${medName}</span>
+                                    <input type="hidden" name="Items[${itemIndex}].MedicineId" value="${medId}" />
+                                    <input type="hidden" name="Items[${itemIndex}].MedicineName" value="${medName}" />
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border px-3 py-2 fs-6">${qty}</span>
+                                    <input type="hidden" name="Items[${itemIndex}].Quantity" class="item-qty" value="${qty}" />
+                                </td>
+                                <td class="text-end text-muted">
+                                    $${price.toFixed(2)}
+                                    <input type="hidden" name="Items[${itemIndex}].UnitPrice" class="item-price" value="${price}" />
+                                </td>
+                                <td class="text-end fw-bold text-success">
+                                    $${subTotal}
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove-row rounded-circle" title="Remove">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+
+                $('#orderItemsBody').append(rowHtml);
+                itemIndex++;
+
+                // Reset inputs
+                medSelect.val('');
+                $('#quickQty').val(1);
+                $('#quickPrice').val('');
+
+                updateUiState();
+            });
+
+            // Remove Row
+            $('#orderItemsBody').on('click', '.btn-remove-row', function () {
+                $(this).closest('tr').remove();
+                reindexRows();
+                updateUiState();
+            });
+
+            // Ensure contiguous indices for ASP.NET List ModelBinder
+            function reindexRows() {
+                itemIndex = 0;
+                $('#orderItemsBody tr').each(function () {
+                    $(this).find('.row-number').text(itemIndex + 1);
+                    $(this).find('input[name*="MedicineId"]').attr('name', `Items[${itemIndex}].MedicineId`);
+                    $(this).find('input[name*="MedicineName"]').attr('name', `Items[${itemIndex}].MedicineName`);
+                    $(this).find('input[name*="Quantity"]').attr('name', `Items[${itemIndex}].Quantity`);
+                    $(this).find('input[name*="UnitPrice"]').attr('name', `Items[${itemIndex}].UnitPrice`);
+                    itemIndex++;
+                });
+            }
+
+            function updateUiState() {
+                const count = $('#orderItemsBody tr').length;
+                if (count === 0) {
+                    $('#emptyItemsAlert').show();
+                    $('#itemsTable').hide();
+                } else {
+                    $('#emptyItemsAlert').hide();
+                    $('#itemsTable').show();
+                }
+
+                let grandTotal = 0;
+                $('#orderItemsBody tr').each(function () {
+                    const q = parseFloat($(this).find('.item-qty').val()) || 0;
+                    const p = parseFloat($(this).find('.item-price').val()) || 0;
+                    grandTotal += (q * p);
+                });
+
+                $('#grandTotalDisplay').text('$' + grandTotal.toFixed(2));
+                reindexRows();
+            }
+
+            // Guard before submitting
+            $('#purchaseOrderForm').on('submit', function (e) {
+                if ($('#orderItemsBody tr').length === 0) {
+                    e.preventDefault();
+                    alert('Please add at least one medicine item to the purchase order before confirming.');
+                    return false;
+                }
+            });
+
+            updateUiState();
+        });
+    </script>
 }

@@ -1,28 +1,132 @@
 ﻿@model PharmacySystem.ViewModels.PurchaseOrderViewModel
 
 @{
-    ViewData["Title"] = "Purchase Order Details";
+    ViewData["Title"] = $"Purchase Order #PO-{Model.Id:D5}";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0">Purchase Order #@Model.Id</h5>
-        </div>
-        <div class="card-body">
-            <dl class="row mb-0">
-                <dt class="col-sm-3">Supplier:</dt>
-                <dd class="col-sm-9">@Model.SupplierName</dd>
+<div class="container py-4">
+    <!-- Action Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-4 d-print-none">
+        <a asp-action="Index" class="btn btn-outline-secondary px-3 rounded-3">
+            <i class="bi bi-arrow-left me-1"></i> Back to Orders
+        </a>
+        <button type="button" class="btn text-white px-4 rounded-3 shadow-sm" style="background-color: #0d9488;" onclick="window.print();">
+            <i class="bi bi-printer-fill me-1"></i> Print Invoice
+        </button>
+    </div>
 
-                <dt class="col-sm-3">Order Date:</dt>
-                <dd class="col-sm-9">@Model.OrderDate.ToString("yyyy-MM-dd")</dd>
-            </dl>
+    <!-- Printable Invoice Sheet -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-md-5">
+        <!-- Invoice Header -->
+        <div class="row align-items-center border-bottom pb-4 mb-4">
+            <div class="col-sm-6">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-capsule-pill fs-1" style="color: #0d9488;"></i>
+                    <h3 class="fw-bold mb-0" style="color: #0d9488;">PharmaCare</h3>
+                </div>
+                <p class="text-muted small mb-0">Management System & Pharmacy Inventory</p>
+            </div>
+            <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+                <span class="badge px-3 py-2 fs-6 rounded-pill" style="background-color: #f0fdfa; color: #0d9488; border: 1px solid #0d9488;">
+                    Purchase Order Received
+                </span>
+                <h4 class="fw-bold text-dark mt-2 mb-0">#PO-@Model.Id.ToString("D5")</h4>
+            </div>
         </div>
-        <div class="card-footer d-flex justify-content-between bg-light">
-            <a asp-action="Index" class="btn btn-outline-secondary">Back to Orders</a>
-            <a asp-controller="PurchaseOrderItems" asp-action="Index" asp-route-orderId="@Model.Id" class="btn btn-primary">
-                View & Manage Items
-            </a>
+
+        <!-- Meta Info -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <h6 class="text-secondary text-uppercase small fw-bold mb-2">Supplier Details</h6>
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-truck fs-4 text-muted"></i>
+                    <div>
+                        <div class="fw-bold text-dark fs-5">@Model.SupplierName</div>
+                        <div class="text-muted small">ID: #SUP-@Model.SupplierId.ToString("D3")</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <h6 class="text-secondary text-uppercase small fw-bold mb-2">Invoice Information</h6>
+                <p class="mb-1 text-dark"><span class="text-muted">Order Date:</span> <strong>@Model.OrderDate.ToString("MMMM dd, yyyy")</strong></p>
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <p class="mb-0 text-muted small"><span class="fw-bold text-dark">Notes:</span> @Model.Notes</p>
+                }
+            </div>
+        </div>
+
+        <!-- Line Items Table -->
+        <div class="table-responsive mb-4">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light text-secondary small text-uppercase">
+                    <tr>
+                        <th style="width: 5%;">#</th>
+                        <th style="width: 50%;">Received Medicine Item</th>
+                        <th style="width: 15%;" class="text-center">Quantity</th>
+                        <th style="width: 15%;" class="text-end">Unit Cost</th>
+                        <th style="width: 15%;" class="text-end">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        int counter = 1;
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="text-muted fw-semibold">@counter</td>
+                                <td class="fw-bold text-dark">@item.MedicineName</td>
+                                <td class="text-center">@item.Quantity</td>
+                                <td class="text-end">$@item.UnitPrice.ToString("N2")</td>
+                                <td class="text-end fw-semibold text-dark">$@((item.Quantity * item.UnitPrice).ToString("N2"))</td>
+                            </tr>
+                            counter++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">No items recorded in this order.</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-light">
+                        <td colspan="4" class="text-end fw-bold text-uppercase fs-6">Grand Total Amount:</td>
+                        <td class="text-end fw-bolder fs-5" style="color: #0d9488;">
+                            $@Model.TotalCost.ToString("N2")
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Footer Signatures -->
+        <div class="row pt-5 mt-4 text-center text-muted small border-top">
+            <div class="col-6">
+                <div class="border-top border-secondary w-50 mx-auto pt-2">Received By (Pharmacist)</div>
+            </div>
+            <div class="col-6">
+                <div class="border-top border-secondary w-50 mx-auto pt-2">Authorized Signature</div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    @@media print {
+        .d-print-none {
+            display: none !important;
+        }
+
+        body {
+            background-color: #fff !important;
+        }
+
+        .card {
+            box-shadow: none !important;
+            border: 0 !important;
+        }
+    }
+</style>
