@@ -7,6 +7,7 @@ using PharmacySystem.ViewModels;
 
 namespace PharmacySystem.Controllers
 {
+    [Authorize(Roles = "Admin , Pharmacist")]
     //[Authorize(Roles = $"{AppConstants.Roles.Admin},{AppConstants.Roles.Pharmacist}")]
     public class SupplierController : Controller
     {

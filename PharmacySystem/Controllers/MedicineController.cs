@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PharmacyManagement.Core.Interfaces;
-using PharmacySystem.Models.DBModels;
 using PharmacyManagement.Web.ViewModels.Medicines;
+using PharmacySystem.Models.DBModels;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace PharmacyManagement.Web.Controllers
 {
+    [Authorize(Roles = "Admin , Pharmacist")]
     public class MedicineController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

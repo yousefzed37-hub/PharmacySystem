@@ -1,0 +1,45 @@
+﻿@model PharmacySystem.ViewModels.UserRolesViewModel
+
+@{
+    ViewData["Title"] = "Manage User Roles";
+}
+
+<div class="container py-4" style="max-width: 700px;">
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header text-white p-3" style="background-color: #0f766e;">
+            <h5 class="m-0 fw-bold"><i class="bi bi-person-gear me-2"></i>Manage Roles for @Model.UserName</h5>
+            <small class="text-white-50">@Model.Email</small>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="ManageRoles" method="post">
+                <input type="hidden" asp-for="UserId" />
+                <input type="hidden" asp-for="UserName" />
+                <input type="hidden" asp-for="Email" />
+
+                <label class="form-label fw-bold text-muted mb-3">Assign Roles:</label>
+
+                <div class="list-group mb-4">
+                    @for (int i = 0; i < Model.Roles.Count; i++)
+                    {
+                        <div class="list-group-item d-flex align-items-center justify-content-between p-3">
+                            <div>
+                                <input type="hidden" asp-for="Roles[i].RoleName" />
+                                <input class="form-check-input me-2 fs-5" type="checkbox" asp-for="Roles[i].IsSelected" id="role_@i">
+                                <label class="form-check-label fw-semibold text-dark fs-6" for="role_@i">
+                                    @Model.Roles[i].RoleName
+                                </label>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                    <button type="submit" class="btn text-white rounded-pill px-4 shadow-sm" style="background-color: #0f766e;">
+                        <i class="bi bi-check-circle me-1"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

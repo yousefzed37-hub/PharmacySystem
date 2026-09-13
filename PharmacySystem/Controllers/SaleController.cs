@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PharmacyManagement.Core.Interfaces;
 using PharmacySystem.Models.DBModels;
@@ -7,6 +8,7 @@ using System.Security.Claims;
 
 namespace PharmacySystem.Controllers
 {
+    [Authorize(Roles = "Admin , Pharmacist , Cashier")]
     public class SaleController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

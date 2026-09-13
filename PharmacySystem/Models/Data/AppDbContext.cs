@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PharmacySystem.Interface;
 using PharmacySystem.Models.DBModels;
@@ -24,6 +25,35 @@ namespace PharmacySystem.Models.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // 2. إضافة الأدوار الافتراضية
+            var adminRoleId = "a182b8a0-2f22-49f3-8b1e-0d12e3456781";
+            var pharmacistRoleId = "b273c9b1-3f33-40a4-9c2f-1e23f4567892";
+            var cashierRoleId = "c384d0c2-4f44-51b5-ad30-2f34a5678903";
+
+            modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole
+                {
+                    Id = adminRoleId,
+                    Name = "Admin",
+                    NormalizedName = "ADMIN",
+                    ConcurrencyStamp = "ac9965c6-60b5-481a-adfe-b0df2561251b"
+                },
+                new IdentityRole
+                {
+                    Id = pharmacistRoleId,
+                    Name = "Pharmacist",
+                    NormalizedName = "PHARMACIST",
+                    ConcurrencyStamp = "8d769b15-2f7b-44c2-bae7-b8009de9565f"
+                },
+                new IdentityRole
+                {
+                    Id = cashierRoleId,
+                    Name = "Cashier",
+                    NormalizedName = "CASHIER",
+                    ConcurrencyStamp = "fb37521b-7185-4103-840e-11a0163bea49"
+                }
+            );
 
             // إيقاف الحذف المتتالي كقاعدة عامة
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))

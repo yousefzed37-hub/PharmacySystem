@@ -40,57 +40,76 @@
 
         <nav class="sidebar-nav">
             <ul class="nav flex-column">
-                <li class="nav-item">
+                @if (User.IsInRole("Admin"))
+                {
+                     <li class="nav-item">
                     <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index">
                         <i class="fa-solid fa-gauge-high"></i>
                         <span class="link-text">Dashboard</span>
                     </a>
-                </li>
-                <li class="nav-item">
+                    </li>   
+                }
+                
+                @if(User.IsInRole("Admin") || User.IsInRole("Pharmacist") || User.IsInRole("Cashier"))
+                {
+                     <li class="nav-item">
                     <a class="nav-link" asp-area="" asp-controller="Sale" asp-action="Index">
                         <i class="fa-solid fa-cash-register"></i>
                         <span class="link-text">POS (Sales)</span>
                     </a>
-                </li>
-                <li class="nav-item">
+                    </li>   
+                }
+                
+                @if(User.IsInRole("Admin") || User.IsInRole("Pharmacist"))
+                {
+                    <li class="nav-item">
                     <a class="nav-link" asp-area="" asp-controller="PurchaseOrder" asp-action="Index">
                         <i class="fa-solid fa-boxes-stacked"></i>
                         <span class="link-text">Purchase Order</span>
                     </a>
-                </li>
-                <li class="nav-item">
+                    </li> 
+                }
+                
+                @if(User.IsInRole("Admin") || User.IsInRole("Pharmacist"))
+                {
+                    <li class="nav-item">
                     <a class="nav-link" asp-area="" asp-controller="Medicine" asp-action="Index">
                         <i class="fa-solid fa-pills"></i>
                         <span class="link-text">Medicines</span>
                     </a>
-                </li>
-                <li class="nav-item">
+                    </li> 
+                }
+                
+                @if(User.IsInRole("Admin") || User.IsInRole("Pharmacist"))
+                {
+                    <li class="nav-item">
                     <a class="nav-link" asp-area="" asp-controller="Category" asp-action="Index">
                         <i class="fa-solid fa-tags"></i>
                         <span class="link-text">Categories</span>
                     </a>
-                </li>
-                <li class="nav-item">
+                    </li>
+                }
+                
+                @if(User.IsInRole("Admin") || User.IsInRole("Pharmacist"))
+                {
+                    <li class="nav-item">
                     <a class="nav-link" asp-area="" asp-controller="Supplier" asp-action="Index">
                         <i class="fa-solid fa-truck-medical"></i>
                         <span class="link-text">Suppliers</span>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" asp-area="" asp-controller="Reports" asp-action="Index">
+                    </li>
+                }
+                
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item">
+                    <a class="nav-link" asp-area="" asp-controller="Users" asp-action="Index">
                         <i class="fa-solid fa-chart-line"></i>
-                        <span class="link-text">Reports</span>
+                        <span class="link-text">Users</span>
                     </a>
-                </li>
-
-                <li class="nav-divider"><span>System</span></li>
-
-                <li class="nav-item">
-                    <a class="nav-link" asp-area="" asp-controller="Settings" asp-action="Index">
-                        <i class="fa-solid fa-gear"></i>
-                        <span class="link-text">Settings</span>
-                    </a>
-                </li>
+                    </li>
+                }
+                
             </ul>
         </nav>
     </aside>
