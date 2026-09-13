@@ -32,6 +32,7 @@ namespace PharmacySystem.Controllers
                 SupplierId = o.SupplierId,
                 SupplierName = suppliers.ContainsKey(o.SupplierId) ? suppliers[o.SupplierId] : "N/A",
                 OrderDate = o.OrderDate,
+                TotalCost = o.TotalCost,
                 Notes = string.Empty // رأس الجدول في الـ Index
             }).OrderByDescending(o => o.OrderDate).ToList();
 
@@ -70,6 +71,7 @@ namespace PharmacySystem.Controllers
         }
 
         // GET: /PurchaseOrders/Create
+        // GET: /PurchaseOrder/Create
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -79,6 +81,11 @@ namespace PharmacySystem.Controllers
                 SuppliersList = await GetSuppliersSelectListAsync(),
                 MedicinesList = await GetMedicinesSelectListAsync()
             };
+
+            // ده السطر اللي كان ناقص ومخلي الأقسام مش باينة نهائياً:
+            ViewBag.CategoriesList = (await _unitOfWork.Categories.GetAllAsync())
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                .ToList();
 
             return View(model);
         }
@@ -97,6 +104,11 @@ namespace PharmacySystem.Controllers
             {
                 model.SuppliersList = await GetSuppliersSelectListAsync();
                 model.MedicinesList = await GetMedicinesSelectListAsync();
+
+                
+                ViewBag.CategoriesList = (await _unitOfWork.Categories.GetAllAsync())
+                    .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name });
+
                 return View(model);
             }
 

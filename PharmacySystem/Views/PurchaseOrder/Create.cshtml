@@ -1,7 +1,7 @@
 ﻿@model PharmacySystem.ViewModels.PurchaseOrderViewModel
 
 @{
-    ViewData["Title"] = "New Purchase Order";
+    ViewData["Title"] = "Receive New Stock";
 }
 
 <div class="container-fluid py-4">
@@ -19,12 +19,14 @@
     </div>
 
     <form asp-action="Create" method="post" id="purchaseOrderForm">
+        <div asp-validation-summary="All" class="alert alert-danger"></div>
         @Html.AntiForgeryToken()
 
+        
         <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 shadow-sm rounded-3 mb-4"></div>
 
         <div class="row g-4">
-            <!-- Left Column: Supplier & Invoice Meta -->
+            <!-- Left Column: Supplier & Invoice Info -->
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
                     <div class="card-header bg-white py-3 border-0">
@@ -33,7 +35,7 @@
                         </h5>
                     </div>
                     <div class="card-body pt-0">
-                        <!-- Supplier -->
+                        <!-- Supplier Select -->
                         <div class="mb-3">
                             <label asp-for="SupplierId" class="form-label fw-semibold text-secondary small"></label>
                             <div class="input-group">
@@ -68,9 +70,9 @@
                             <h2 class="fw-bolder mb-0 mt-1" style="color: #0d9488;" id="grandTotalDisplay">$0.00</h2>
                         </div>
 
-                        <!-- Submit Button -->
+                        <!-- Save Invoice Submit Button -->
                         <div class="d-grid mt-4">
-                            <button type="submit" class="btn text-white btn-lg shadow-sm rounded-3 py-2" style="background-color: #0d9488;">
+                            <button type="submit" class="btn text-white btn-lg shadow-sm rounded-3 py-2" style="background-color: #0d9488;" id="btnSubmitOrder">
                                 <i class="bi bi-check-circle me-1"></i> Confirm & Receive Stock
                             </button>
                         </div>
@@ -78,7 +80,7 @@
                 </div>
             </div>
 
-            <!-- Right Column: Add Items & Dynamic Cart -->
+            <!-- Right Column: Dropdown Bar + Dynamic Table -->
             <div class="col-lg-8">
                 <div class="card border-0 shadow-sm rounded-3 bg-white">
                     <div class="card-header bg-white py-3 border-0">
@@ -87,25 +89,42 @@
                         </h5>
                     </div>
                     <div class="card-body pt-0">
-                        <!-- Quick Add Bar -->
+                        <!-- Quick Add Bar (Pure Select Dropdown) -->
                         <div class="p-3 rounded-3 mb-4" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
                             <div class="row g-2 align-items-end">
-                                <div class="col-md-5">
-                                    <label class="form-label small fw-bold text-secondary">Medicine</label>
-                                    <select id="quickMedicine" asp-items="Model.MedicinesList" class="form-select">
-                                        <option value="">-- Choose Medicine --</option>
-                                    </select>
+                                <!-- Medicine Dropdown -->
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label small fw-bold text-secondary mb-0">Medicine</label>
+                                        <button type="button" class="btn btn-link p-0 text-decoration-none small fw-bold" style="color: #0d9488;" data-bs-toggle="modal" data-bs-target="#quickAddMedicineModal">
+                                            <i class="bi bi-plus-circle me-1"></i>New Medicine
+                                        </button>
+                                    </div>
+                                    <div class="input-group">
+                                        <select id="medicineSelect" asp-items="Model.MedicinesList" class="form-select">
+                                            <option value="">-- Choose Medicine --</option>
+                                        </select>
+                                        <button type="button" class="btn text-white" style="background-color: #0d9488;" data-bs-toggle="modal" data-bs-target="#quickAddMedicineModal" title="Quick Add">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                    </div>
                                 </div>
+
+                                <!-- Quantity -->
                                 <div class="col-md-2">
                                     <label class="form-label small fw-bold text-secondary">Qty</label>
-                                    <input type="number" id="quickQty" class="form-control" min="1" value="1" />
+                                    <input type="number" id="itemQty" class="form-control" min="1" value="1" />
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-secondary">Unit Cost ($)</label>
-                                    <input type="number" id="quickPrice" class="form-control" min="0.01" step="0.01" placeholder="0.00" />
+
+                                <!-- Unit Price -->
+                                <div class="col-md-2">
+                                    <label class="form-label small fw-bold text-secondary">Unit Price ($)</label>
+                                    <input type="number" id="itemPrice" class="form-control" min="0.01" step="0.01" placeholder="0.00" />
                                 </div>
+
+                                <!-- Add Button -->
                                 <div class="col-md-2 d-grid">
-                                    <button type="button" class="btn text-white fw-bold" style="background-color: #0d9488;" id="btnAddItem">
+                                    <button type="button" class="btn text-white fw-bold py-2" style="background-color: #0d9488;" id="btnAddItem">
                                         <i class="bi bi-plus-lg me-1"></i> Add
                                     </button>
                                 </div>
@@ -118,15 +137,15 @@
                                 <thead class="table-light text-secondary small text-uppercase">
                                     <tr>
                                         <th style="width: 5%;">#</th>
-                                        <th style="width: 40%;">Medicine</th>
+                                        <th style="width: 45%;">Medicine</th>
                                         <th style="width: 15%;" class="text-center">Quantity</th>
-                                        <th style="width: 20%;" class="text-end">Unit Cost</th>
+                                        <th style="width: 15%;" class="text-end">Unit Price</th>
                                         <th style="width: 15%;" class="text-end">Subtotal</th>
                                         <th style="width: 5%;" class="text-center">Remove</th>
                                     </tr>
                                 </thead>
                                 <tbody id="orderItemsBody">
-                                    <!-- Dynamic Items Populated By JS -->
+                                    <!-- Rows added dynamically via JavaScript -->
                                 </tbody>
                             </table>
                         </div>
@@ -145,99 +164,359 @@
     </form>
 </div>
 
+<!-- Quick Add Medicine Modal -->
+<div class="modal fade" id="quickAddMedicineModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-3">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark">
+                    <i class="bi bi-capsule me-2" style="color: #0d9488;"></i>Quick Add Medicine
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3">
+                <div id="quickModalError" class="alert alert-danger py-2 px-3 small border-0 rounded-2 d-none"></div>
+
+                <form id="quickMedicineForm">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-secondary">Medicine Name *</label>
+                            <input type="text" id="modalMedName" class="form-control" placeholder="e.g. Panadol Extra" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-secondary">Category *</label>
+                            <select id="modalMedCategory" class="form-select" asp-items="ViewBag.CategoriesList" required>
+                                <option value="">-- Choose Category --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Cost Price ($) *</label>
+                            <input type="number" id="modalMedCost" class="form-control" min="0.01" step="0.01" placeholder="0.00" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Sale Price ($) *</label>
+                            <input type="number" id="modalMedSale" class="form-control" min="0.01" step="0.01" placeholder="0.00" required />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light border px-3" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn text-white px-4" style="background-color: #0d9488;" id="btnSaveQuickMedicine">
+                    <i class="bi bi-check-lg me-1"></i> Save & Select
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let itemIndex = 0;
+
+        // ===============================================
+        // 1. زرار الـ Add Item
+        // ===============================================
+        const btnAdd = document.getElementById('btnAddItem');
+        if (btnAdd) {
+            btnAdd.addEventListener('click', function () {
+                const medSelect = document.getElementById('medicineSelect');
+                const medId = medSelect.value;
+                const medName = medSelect.options[medSelect.selectedIndex] ? medSelect.options[medSelect.selectedIndex].text : '';
+                const qtyInput = document.getElementById('itemQty');
+                const priceInput = document.getElementById('itemPrice');
+                
+                const quantity = parseInt(qtyInput.value);
+                const unitPrice = parseFloat(priceInput.value);
+
+                if (!medId || medId === "") {
+                    alert("Please select a medicine first!");
+                    medSelect.focus();
+                    return;
+                }
+
+                if (isNaN(quantity) || quantity <= 0) {
+                    alert("Quantity must be at least 1");
+                    qtyInput.focus();
+                    return;
+                }
+
+                if (isNaN(unitPrice) || unitPrice <= 0) {
+                    alert("Unit Price must be greater than 0");
+                    priceInput.focus();
+                    return;
+                }
+
+                // فحص التكرار
+                const existingInputs = document.querySelectorAll('input[name$=".MedicineId"]');
+                for (let input of existingInputs) {
+                    if (input.value === medId) {
+                        alert("This medicine is already added in the table!");
+                        return;
+                    }
+                }
+
+                const subTotal = (quantity * unitPrice).toFixed(2);
+                const tbody = document.getElementById('orderItemsBody');
+
+                const tr = document.createElement('tr');
+                tr.className = 'item-row';
+                tr.innerHTML = `
+                    <td class="row-number fw-bold text-muted"></td>
+                    <td>
+                        <span class="fw-semibold text-dark">${medName}</span>
+                        <input type="hidden" name="Items[${itemIndex}].MedicineId" value="${medId}" />
+                        <input type="hidden" name="Items[${itemIndex}].MedicineName" value="${medName}" />
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-light text-dark border px-3 py-2 fs-6">${quantity}</span>
+                        <input type="hidden" name="Items[${itemIndex}].Quantity" class="item-qty" value="${quantity}" />
+                    </td>
+                    <td class="text-end text-muted">
+                        $${unitPrice.toFixed(2)}
+                        <input type="hidden" name="Items[${itemIndex}].UnitPrice" class="item-price" value="${unitPrice}" />
+                    </td>
+                    <td class="text-end fw-bold text-success">
+                        $${subTotal}
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-row rounded-circle" title="Remove">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+                itemIndex++;
+
+                // تفريغ الحقول
+                medSelect.value = '';
+                qtyInput.value = 1;
+                priceInput.value = '';
+
+                updateState();
+            });
+        }
+
+        // ===============================================
+        // 2. زرار Remove Row
+        // ===============================================
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.btn-remove-row')) {
+                const row = e.target.closest('tr');
+                row.remove();
+                reindex();
+                updateState();
+            }
+        });
+
+        function reindex() {
+            itemIndex = 0;
+            const rows = document.querySelectorAll('#orderItemsBody tr');
+            rows.forEach((row, idx) => {
+                row.querySelector('.row-number').textContent = idx + 1;
+                row.querySelector('input[name*="MedicineId"]').setAttribute('name', `Items[${idx}].MedicineId`);
+                row.querySelector('input[name*="MedicineName"]').setAttribute('name', `Items[${idx}].MedicineName`);
+                row.querySelector('input[name*="Quantity"]').setAttribute('name', `Items[${idx}].Quantity`);
+                row.querySelector('input[name*="UnitPrice"]').setAttribute('name', `Items[${idx}].UnitPrice`);
+                itemIndex++;
+            });
+        }
+
+        function updateState() {
+            const rows = document.querySelectorAll('#orderItemsBody tr');
+            const alertBox = document.getElementById('emptyItemsAlert');
+            const table = document.getElementById('itemsTable');
+            const totalDisplay = document.getElementById('grandTotalDisplay');
+
+            if (rows.length === 0) {
+                if (alertBox) alertBox.style.display = 'block';
+                if (table) table.style.display = 'none';
+            } else {
+                if (alertBox) alertBox.style.display = 'none';
+                if (table) table.style.display = 'table';
+            }
+
+            let grandTotal = 0;
+            rows.forEach(r => {
+                const q = parseFloat(r.querySelector('.item-qty').value) || 0;
+                const p = parseFloat(r.querySelector('.item-price').value) || 0;
+                grandTotal += (q * p);
+            });
+
+            if (totalDisplay) {
+                totalDisplay.textContent = '$' + grandTotal.toFixed(2);
+            }
+            reindex();
+        }
+
+        // ===============================================
+        // 3. زرار Save & Select في الـ Modal (Fetch API Native)
+        // ===============================================
+const btnSaveModal = document.getElementById('btnSaveQuickMedicine');
+if (btnSaveModal) {
+    btnSaveModal.addEventListener('click', function () {
+        const name = document.getElementById('modalMedName').value.trim();
+        const categoryId = parseInt(document.getElementById('modalMedCategory').value);
+        const costPrice = parseFloat(document.getElementById('modalMedCost').value);
+        const salePrice = parseFloat(document.getElementById('modalMedSale').value);
+        const errorBox = document.getElementById('quickModalError');
+
+        if (!name || isNaN(categoryId) || isNaN(costPrice) || isNaN(salePrice)) {
+            errorBox.classList.remove('d-none');
+            errorBox.textContent = "Please fill all required fields.";
+            return;
+        }
+
+        fetch('/Medicine/QuickCreate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                Name: name,
+                CategoryId: categoryId,
+                CostPrice: costPrice,
+                SalePrice: salePrice,
+                ReorderLevel: 5
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                // ضيف الدواء للـ select واختاره
+                const select = document.getElementById('medicineSelect');
+                const opt = document.createElement('option');
+                opt.value = res.id;
+                opt.textContent = res.name;
+                opt.selected = true;
+                select.appendChild(opt);
+
+                // اكتب سعره في خانة التكلفة
+                document.getElementById('itemPrice').value = res.costPrice.toFixed(2);
+
+                // اقفل المودال
+                document.getElementById('quickMedicineForm').reset();
+                errorBox.classList.add('d-none');
+
+                const modalEl = document.getElementById('quickAddMedicineModal');
+                const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                modal.hide();
+            } else {
+                errorBox.classList.remove('d-none');
+                errorBox.textContent = res.message;
+            }
+        })
+        .catch(err => {
+            errorBox.classList.remove('d-none');
+            errorBox.textContent = "Request failed: " + err.message;
+        });
+    });
+}
+
+        updateState();
+    });
+</script>
 
     <script>
         $(document).ready(function () {
             let itemIndex = 0;
 
+            // ==========================================
+            // 1. زرار Add Item للجدول
+            // ==========================================
             $('#btnAddItem').on('click', function () {
-                const medSelect = $('#quickMedicine');
-                const medId = medSelect.val();
-                const medName = medSelect.find('option:selected').text();
-                const qty = parseInt($('#quickQty').val());
-                const price = parseFloat($('#quickPrice').val());
+                const medSelect = $('#medicineSelect');
+                const medicineId = medSelect.val();
+                const medicineName = medSelect.find('option:selected').text();
+                const quantity = parseInt($('#itemQty').val());
+                const unitPrice = parseFloat($('#itemPrice').val());
 
-                if (!medId) {
-                    alert('Please choose a medicine.');
+                if (!medicineId || medicineId === "") {
+                    alert('Please select a medicine from the dropdown.');
                     medSelect.focus();
                     return;
                 }
 
-                if (isNaN(qty) || qty <= 0) {
-                    alert('Enter a valid quantity (min: 1).');
-                    $('#quickQty').focus();
+                if (isNaN(quantity) || quantity <= 0) {
+                    alert('Quantity must be at least 1.');
+                    $('#itemQty').focus();
                     return;
                 }
 
-                if (isNaN(price) || price <= 0) {
-                    alert('Enter a valid purchase unit price.');
-                    $('#quickPrice').focus();
+                if (isNaN(unitPrice) || unitPrice <= 0) {
+                    alert('Unit price must be greater than 0.');
+                    $('#itemPrice').focus();
                     return;
                 }
 
-                // Check for duplicate items
-                let exists = false;
+                // منع تكرار نفس الدواء
+                let alreadyExists = false;
                 $('input[name$=".MedicineId"]').each(function () {
-                    if ($(this).val() === medId) {
-                        exists = true;
+                    if ($(this).val() === medicineId) {
+                        alreadyExists = true;
                     }
                 });
 
-                if (exists) {
-                    alert('This medicine is already in the list. Remove it first to update quantity.');
+                if (alreadyExists) {
+                    alert('This medicine is already in the order table.');
                     return;
                 }
 
-                const subTotal = (qty * price).toFixed(2);
+                const lineTotal = (quantity * unitPrice).toFixed(2);
 
+                // بناء صف الجدول بأسماء PurchaseOrderItemViewModel المطابقة لكودك:
+                // Items[i].MedicineId, Items[i].MedicineName, Items[i].Quantity, Items[i].UnitPrice
                 const rowHtml = `
-                            <tr class="item-row">
-                                <td class="row-number fw-bold text-muted"></td>
-                                <td>
-                                    <span class="fw-semibold text-dark">${medName}</span>
-                                    <input type="hidden" name="Items[${itemIndex}].MedicineId" value="${medId}" />
-                                    <input type="hidden" name="Items[${itemIndex}].MedicineName" value="${medName}" />
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-light text-dark border px-3 py-2 fs-6">${qty}</span>
-                                    <input type="hidden" name="Items[${itemIndex}].Quantity" class="item-qty" value="${qty}" />
-                                </td>
-                                <td class="text-end text-muted">
-                                    $${price.toFixed(2)}
-                                    <input type="hidden" name="Items[${itemIndex}].UnitPrice" class="item-price" value="${price}" />
-                                </td>
-                                <td class="text-end fw-bold text-success">
-                                    $${subTotal}
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove-row rounded-circle" title="Remove">
-                                        <i class="bi bi-x-lg"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
+                    <tr class="item-row">
+                        <td class="row-number fw-bold text-muted"></td>
+                        <td>
+                            <span class="fw-semibold text-dark">${medicineName}</span>
+                            <input type="hidden" name="Items[${itemIndex}].MedicineId" value="${medicineId}" />
+                            <input type="hidden" name="Items[${itemIndex}].MedicineName" value="${medicineName}" />
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border px-3 py-2 fs-6">${quantity}</span>
+                            <input type="hidden" name="Items[${itemIndex}].Quantity" class="item-qty" value="${quantity}" />
+                        </td>
+                        <td class="text-end text-muted">
+                            $${unitPrice.toFixed(2)}
+                            <input type="hidden" name="Items[${itemIndex}].UnitPrice" class="item-price" value="${unitPrice}" />
+                        </td>
+                        <td class="text-end fw-bold text-success">
+                            $${lineTotal}
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-row rounded-circle" title="Remove">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
 
                 $('#orderItemsBody').append(rowHtml);
                 itemIndex++;
 
-                // Reset inputs
+                // تصفير المدخلات
                 medSelect.val('');
-                $('#quickQty').val(1);
-                $('#quickPrice').val('');
+                $('#itemQty').val(1);
+                $('#itemPrice').val('');
 
                 updateUiState();
             });
 
-            // Remove Row
+            // ==========================================
+            // 2. زرار حذف سطر من الجدول
+            // ==========================================
             $('#orderItemsBody').on('click', '.btn-remove-row', function () {
                 $(this).closest('tr').remove();
                 reindexRows();
                 updateUiState();
             });
 
-            // Ensure contiguous indices for ASP.NET List ModelBinder
             function reindexRows() {
                 itemIndex = 0;
                 $('#orderItemsBody tr').each(function () {
@@ -271,11 +550,71 @@
                 reindexRows();
             }
 
-            // Guard before submitting
+            // ==========================================
+            // 3. زرار Save & Select في المودال (QuickCreate)
+            // ==========================================
+            $('#btnSaveQuickMedicine').on('click', function () {
+                const name = $('#modalMedName').val().trim();
+                const categoryId = parseInt($('#modalMedCategory').val());
+                const costPrice = parseFloat($('#modalMedCost').val());
+                const salePrice = parseFloat($('#modalMedSale').val());
+
+                if (!name || isNaN(categoryId) || isNaN(costPrice) || isNaN(salePrice)) {
+                    $('#quickModalError').removeClass('d-none').text('Please fill all required fields correctly.');
+                    return;
+                }
+
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                // بيبعت للـ QuickCreate في MedicinesController
+                // كائن مطابق لـ MedicineQuickCreateDto بالمللي
+                $.ajax({
+                    url: '/Medicines/QuickCreate',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: { 'RequestVerificationToken': token },
+                    data: JSON.stringify({
+                        Name: name,
+                        CategoryId: categoryId,
+                        CostPrice: costPrice,
+                        SalePrice: salePrice,
+                        ReorderLevel: 5
+                    }),
+                    success: function (res) {
+                        if (res.success) {
+                            // 1. إضافة الدواء الجديد للـ Dropdown واختياره
+                            const newOption = new Option(res.name, res.id, true, true);
+                            $('#medicineSelect').append(newOption);
+                            $('#medicineSelect').val(res.id);
+
+                            // 2. تعبئة السعر في خانة الـ Unit Price
+                            $('#itemPrice').val(res.costPrice.toFixed(2));
+
+                            // 3. إغلاق وتفريغ المودال
+                            $('#quickMedicineForm')[0].reset();
+                            $('#quickModalError').addClass('d-none');
+                            
+                            const modalElement = document.getElementById('quickAddMedicineModal');
+                            const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+                            modalInstance.hide();
+                        } else {
+                            $('#quickModalError').removeClass('d-none').text(res.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error(xhr);
+                        $('#quickModalError').removeClass('d-none').text('Server error occurred while adding medicine.');
+                    }
+                });
+            });
+
+            // ==========================================
+            // 4. زرار حفظ الفاتورة (Guard against empty table)
+            // ==========================================
             $('#purchaseOrderForm').on('submit', function (e) {
                 if ($('#orderItemsBody tr').length === 0) {
                     e.preventDefault();
-                    alert('Please add at least one medicine item to the purchase order before confirming.');
+                    alert('Please add at least one medicine item to the purchase order before saving.');
                     return false;
                 }
             });

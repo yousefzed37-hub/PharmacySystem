@@ -146,7 +146,7 @@
             </div>
             <div class="modal-footer border-0 pt-0">
                 <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Close</button>
-                <form id="deleteOrderForm" asp-action="Delete" method="post">
+                <form id="deleteOrderForm" action="/PurchaseOrder/Delete" method="post">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="id" id="modalOrderId" />
                     <button type="submit" class="btn btn-danger px-4">Confirm Delete</button>
