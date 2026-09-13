@@ -12,8 +12,8 @@ using PharmacySystem.Models.Data;
 namespace PharmacySystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260912205235_IntialCreate")]
-    partial class IntialCreate
+    [Migration("20260913181559_Intial_Create")]
+    partial class Intial_Create
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

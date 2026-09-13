@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PharmacySystem.Migrations
 {
     /// <inheritdoc />
-    public partial class IntialCreate : Migration
+    public partial class Intial_Create : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
