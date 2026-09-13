@@ -5,37 +5,46 @@
 }
 
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3 d-print-none">
-        <a asp-action="Index" class="btn btn-outline-secondary">
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-between align-items-center mb-4 d-print-none">
+        <a asp-action="Index" class="btn btn-light rounded-pill px-4">
             <i class="bi bi-arrow-left me-1"></i> Back to List
         </a>
-        <button onclick="window.print()" class="btn btn-primary">
+        <button onclick="window.print()" class="btn text-white rounded-pill px-4 shadow-sm" style="background-color: #0f766e;">
             <i class="bi bi-printer me-1"></i> Print Invoice
         </button>
     </div>
 
     <!-- Printable Invoice Card -->
-    <div class="card border-0 shadow-lg p-4 bg-white" id="printableArea">
+    <div class="card border-0 shadow-sm rounded-3 p-4 bg-white" id="printableArea">
         <!-- Receipt Header -->
         <div class="row border-bottom pb-4 mb-4 align-items-center">
             <div class="col-6">
-                <h3 class="fw-bold text-primary mb-1"><i class="bi bi-hospital me-2"></i>Pharmacy System</h3>
-                <p class="text-muted small m-0">Sales & Inventory Management</p>
+                <h3 class="fw-bold mb-1" style="color: #0f766e;">
+                    <i class="bi bi-hospital me-2"></i>PharmaCare
+                </h3>
+                <p class="text-muted small m-0">Sales & Inventory Management System</p>
             </div>
             <div class="col-6 text-end">
-                <span class="badge bg-primary fs-6 mb-2">Sales Receipt</span>
-                <h5 class="fw-bold mb-0"># @Model.InvoiceNumber</h5>
-                <small class="text-muted"><i class="bi bi-calendar-event me-1"></i>@Model.SaleDate.ToString("yyyy/MM/dd - hh:mm tt")</small>
+                <span class="badge rounded-pill px-3 py-2 fs-6 mb-2" style="background-color: #e6f4f1; color: #0f766e;">
+                    Sales Receipt
+                </span>
+                <h5 class="fw-bold mb-1 text-dark">#@Model.InvoiceNumber</h5>
+                <small class="text-muted">
+                    <i class="bi bi-calendar-event me-1"></i>@Model.SaleDate.ToString("yyyy/MM/dd - hh:mm tt")
+                </small>
             </div>
         </div>
 
         <!-- Medicine Details Table -->
-        <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-list-check me-2"></i>Purchased Items</h5>
+        <h5 class="fw-bold mb-3" style="color: #0f766e;">
+            <i class="bi bi-list-check me-2"></i>Purchased Items
+        </h5>
         <div class="table-responsive mb-4">
-            <table class="table table-bordered align-middle">
-                <thead class="table-light">
+            <table class="table table-hover align-middle border-0">
+                <thead style="background-color: #f8fafc; color: #0f766e;">
                     <tr>
-                        <th>#</th>
+                        <th style="width: 5%;">#</th>
                         <th>Medicine Name</th>
                         <th class="text-center">Quantity</th>
                         <th class="text-end">Unit Price</th>
@@ -49,9 +58,13 @@
                         <tr>
                             <td>@(i + 1)</td>
                             <td class="fw-bold text-dark">@item.MedicineName</td>
-                            <td class="text-center"><span class="badge bg-light text-dark border">@item.Quantity</span></td>
-                            <td class="text-end">@item.UnitPrice.ToString("C2")</td>
-                            <td class="text-end fw-bold">@item.SubTotal.ToString("C2")</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill px-3 py-1 fw-normal" style="background-color: #f1f5f9; color: #334155;">
+                                    @item.Quantity
+                                </span>
+                            </td>
+                            <td class="text-end text-muted">@item.UnitPrice.ToString("C2")</td>
+                            <td class="text-end fw-bold text-dark">@item.SubTotal.ToString("C2")</td>
                         </tr>
                     }
                 </tbody>
@@ -61,25 +74,26 @@
         <!-- Summary Totals -->
         <div class="row justify-content-end">
             <div class="col-md-5">
-                <ul class="list-group list-group-flush border rounded">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        SubTotal:
-                        <span class="fw-bold">@Model.SubTotal.ToString("C2")</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center text-danger">
-                        Discount:
-                        <span class="fw-bold">- @Model.Discount?.ToString("C2")</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light fs-5 fw-bold text-success">
-                        Total Amount Due:
+                <div class="p-3 rounded-3 border-0 shadow-sm" style="background-color: #f8fafc;">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted fw-semibold">SubTotal:</span>
+                        <span class="fw-bold text-dark">@Model.SubTotal.ToString("C2")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 text-danger">
+                        <span class="fw-semibold">Discount:</span>
+                        <span class="fw-bold">- @((Model.Discount ?? 0).ToString("C2"))</span>
+                    </div>
+                    <hr class="my-2 opacity-25" />
+                    <div class="d-flex justify-content-between fs-5 fw-bold" style="color: #0f766e;">
+                        <span>Total Amount Due:</span>
                         <span>@Model.TotalAmount.ToString("C2")</span>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Footer -->
-        <div class="text-center text-muted border-top pt-3 mt-5 small">
+        <div class="text-center text-muted border-top pt-4 mt-5 small opacity-75">
             <p class="mb-0">Thank you for visiting! Wish you good health!</p>
         </div>
     </div>
@@ -98,6 +112,13 @@
         .card {
             box-shadow: none !important;
             border: none !important;
+            padding: 0 !important;
+        }
+
+        .container {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
         }
     }
 </style>

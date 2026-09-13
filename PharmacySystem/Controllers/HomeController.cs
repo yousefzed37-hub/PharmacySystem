@@ -1,25 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
+using PharmacyManagement.Core.Interfaces;
 using PharmacySystem.Models;
+using PharmacySystem.ViewModels;
 using System.Diagnostics;
 
 namespace PharmacySystem.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IUnitOfWork _unitOfWork;
+        public HomeController(IUnitOfWork unitOfWork)
         {
-            return View();
+            _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var viewModel = new DashboardViewModel
+            {
+                TotalMedicines = await _unitOfWork.Medicines.CountAsync(),
+                TotalCategories = await _unitOfWork.Categories.CountAsync(),
+                TotalSuppliers = await _unitOfWork.Suppliers.CountAsync(),
+                TotalInvoices = await _unitOfWork.Sales.CountAsync(),
+            };
+            return View(viewModel);
         }
     }
 }

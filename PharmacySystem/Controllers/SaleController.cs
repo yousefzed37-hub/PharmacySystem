@@ -29,7 +29,6 @@ namespace PharmacySystem.Controllers
             {
                 Id = sale.Id,
                 InvoiceNumber = sale.InvoiceNumber,
-
                 SaleDate = sale.SaleDate,
                 SubTotal = sale.SubTotal,
                 Discount = sale.Discount,

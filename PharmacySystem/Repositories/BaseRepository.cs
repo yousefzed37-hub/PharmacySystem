@@ -77,5 +77,10 @@ namespace PharmacyManagement.Infrastructure.Repositories
         {
             _dbSet.RemoveRange(entities);
         }
+
+        public async Task<int> CountAsync()
+        {
+            return await _context.Set<T>().CountAsync();
+        }
     }
 }
