@@ -164,5 +164,54 @@ namespace PharmacyManagement.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> QuickCreate([FromBody] MedicineQuickCreateDto dto)
+        {
+            try
+            {
+                if (dto == null || string.IsNullOrWhiteSpace(dto.Name) || dto.CategoryId <= 0)
+                {
+                    return Json(new { success = false, message = "Invalid medicine data or missing category." });
+                }
+
+                // فحص بدون ToLower عشان نتفادى مشاكل ترجمة SQL
+                var cleanName = dto.Name.Trim();
+                var existing = await _unitOfWork.Medicines.FindAsync(m => m.Name == cleanName && !m.IsDeleted);
+                if (existing != null)
+                {
+                    return Json(new { success = false, message = "A medicine with this name already exists!" });
+                }
+
+                var medicine = new Medicine
+                {
+                    Name = cleanName,
+                    CategoryId = dto.CategoryId,
+                    CostPrice = dto.CostPrice,
+                    SalePrice = dto.SalePrice,
+                    StockQuantity = 0,
+                    ReorderLevel = dto.ReorderLevel > 0 ? dto.ReorderLevel : 5,
+                    ExpiryDate = dto.ExpiryDate ?? DateTime.UtcNow.AddYears(2),
+                    IsDeleted = false
+                };
+
+                await _unitOfWork.Medicines.AddAsync(medicine);
+                await _unitOfWork.CompleteAsync();
+
+                return Json(new
+                {
+                    success = true,
+                    id = medicine.Id,
+                    name = medicine.Name,
+                    costPrice = medicine.CostPrice
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "DB Error: " + ex.Message });
+            }
+        }
     }
 }

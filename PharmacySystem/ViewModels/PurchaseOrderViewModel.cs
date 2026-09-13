@@ -26,9 +26,18 @@ namespace PharmacySystem.ViewModels
         public List<PurchaseOrderItemViewModel> Items { get; set; } = new();
 
         [Display(Name = "Total Amount")]
-        public decimal TotalCost => Items?.Sum(i => i.Quantity * i.UnitPrice) ?? 0;
+        
+
+
+        private decimal _totalCost;
+        [Display(Name = "Total Amount")]
+        public decimal TotalCost
+        {
+            get => (Items != null && Items.Any()) ? Items.Sum(i => i.Quantity * i.UnitPrice) : _totalCost;
+            set => _totalCost = value;
+        }
 
         public IEnumerable<SelectListItem>? SuppliersList { get; set; }
-        public IEnumerable<SelectListItem> MedicinesList { get; set; }
+        public IEnumerable<SelectListItem>? MedicinesList { get; set; }
     }
 }

@@ -73,4 +73,15 @@ namespace PharmacyManagement.Web.ViewModels.Medicines
         public bool IsLowStock { get; set; }
         public bool IsExpired => ExpiryDate.HasValue && ExpiryDate.Value <= DateTime.UtcNow;
     }
+
+    public class MedicineQuickCreateDto
+    {
+        public string Name { get; set; } = string.Empty;
+        
+        public int CategoryId { get; set; }
+        public decimal CostPrice { get; set; }
+        public decimal SalePrice { get; set; }
+        public int ReorderLevel { get; set; } = 5;
+        public DateTime? ExpiryDate { get; set; }
+    }
 }
