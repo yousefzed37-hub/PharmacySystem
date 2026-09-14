@@ -4,67 +4,81 @@
     ViewData["Title"] = "Medicines List";
 }
 
-<div class="container mt-4">
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <h2>Medicines List</h2>
-        </div>
-        <div class="col-md-6 text-end">
-           <a asp-controller="Medicine" asp-action="Create" class="btn btn-primary">
-            Add New Medicine
+<div class="container-fluid pt-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-capsule text-teal" style="color: #0f766e;"></i> Medicines List
+        </h2>
+        <a asp-controller="Medicine" asp-action="Create" class="btn btn-success px-4 fw-semibold d-inline-flex align-items-center gap-2" style="background-color: #0f766e; border-color: #0f766e;">
+            <i class="bi bi-plus-circle-fill"></i> Add New Medicine
         </a>
-          
-        </div>
     </div>
 
-    <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-            <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Selling Price</th>
-                <th>Stock</th>
-                <th>Expiry Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var medicine in Model)
-            {
-                <tr>
-                    <td>@medicine.Name</td>
-                    <td>@medicine.CategoryName</td>
-                    <td>$@medicine.SellingPrice</td>
-                    <td>
-                        @if (medicine.IsLowStock == true)
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background-color: #0f766e; color: #ffffff;">
+                        <tr>
+                            <th class="py-3 px-3"><i class="bi bi-file-earmark-medical me-1"></i> Name</th>
+                            <th class="py-3"><i class="bi bi-tags me-1"></i> Category</th>
+                            <th class="py-3"><i class="bi bi-currency-dollar me-1"></i> Selling Price</th>
+                            <th class="py-3"><i class="bi bi-box-seam me-1"></i> Stock</th>
+                            <th class="py-3"><i class="bi bi-calendar-event me-1"></i> Expiry Date</th>
+                            <th class="py-3 text-end px-3"><i class="bi bi-gear me-1"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var medicine in Model)
                         {
-                            <span class="badge bg-danger">@medicine.StockQuantity (Low)</span>
+                            <tr>
+                                <td class="fw-semibold px-3">
+                                    <i class="bi bi-capsule-pill me-1 text-muted"></i> @medicine.Name
+                                </td>
+                                <td>@medicine.CategoryName</td>
+                                <td>$@medicine.SellingPrice</td>
+                                <td>
+                                    @if (medicine.IsLowStock == true)
+                                    {
+                                        <span class="badge bg-danger rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> @medicine.StockQuantity (Low)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-check-circle-fill"></i> @medicine.StockQuantity
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (medicine.IsExpired == true)
+                                    {
+                                        <span class="text-danger fw-bold d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            @(medicine.ExpiryDate.HasValue ? medicine.ExpiryDate.Value.ToString("yyyy-MM-dd") : "No Date") (Expired)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            @(medicine.ExpiryDate.HasValue ? medicine.ExpiryDate.Value.ToString("yyyy-MM-dd") : "No Date")
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end px-3">
+                                    <a asp-action="Edit" asp-route-id="@medicine.Id" class="btn btn-sm btn-outline-warning me-1 d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@medicine.Id" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
                         }
-                        else
-                        {
-                            <span class="badge bg-success">@medicine.StockQuantity</span>
-                        }
-                    </td>
-                    <td>
-                        @if (medicine.IsExpired == true)
-                        {
-                            <span class="text-danger fw-bold">
-                                @(medicine.ExpiryDate.HasValue ? medicine.ExpiryDate.Value.ToString("yyyy-MM-dd") : "No Date") (Expired)
-                            </span>
-                        }
-                        else
-                        {
-                            <span>
-                                @(medicine.ExpiryDate.HasValue ? medicine.ExpiryDate.Value.ToString("yyyy-MM-dd") : "No Date")
-                            </span>
-                        }
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@medicine.Id" class="btn btn-sm btn-warning">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@medicine.Id" class="btn btn-sm btn-danger">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

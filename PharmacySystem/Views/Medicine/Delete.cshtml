@@ -4,36 +4,53 @@
     ViewData["Title"] = "Delete Medicine";
 }
 
-<div class="container mt-4">
-    <h2 class="text-danger">Delete Confirmation</h2>
-    <h3>Are you sure you want to delete this medicine?</h3>
-    <hr />
-
-    <div class="card mt-4">
-        <div class="card-header bg-danger text-white">
-            Medicine Details
-        </div>
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-3">Medicine Name</dt>
-                <dd class="col-sm-9">@Model.Name</dd>
-
-                <dt class="col-sm-3">Category</dt>
-                <dd class="col-sm-9">@Model.CategoryName</dd>
-
-                <dt class="col-sm-3">Selling Price</dt>
-                <dd class="col-sm-9">$@Model.SellingPrice</dd>
-            </dl>
-        </div>
+<div class="container-fluid pt-3">
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <h2 class="fw-bold text-danger d-flex align-items-center gap-2 mb-0">
+            <i class="bi bi-exclamation-triangle-fill"></i> Delete Confirmation
+        </h2>
     </div>
 
-    <div class="mt-4">
-        <form asp-action="Delete" method="post">
-            @Html.AntiForgeryToken()
-            <input type="hidden" asp-for="Id" />
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                <div class="card-header bg-danger text-white py-3 fw-semibold d-flex align-items-center gap-2">
+                    <i class="bi bi-trash-fill"></i> Are you sure you want to delete this medicine?
+                </div>
+                <div class="card-body p-4">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-secondary mb-3">
+                            <i class="bi bi-capsule me-1"></i> Medicine Name
+                        </dt>
+                        <dd class="col-sm-8 fw-bold text-dark mb-3">@Model.Name</dd>
 
-            <button type="submit" class="btn btn-danger">Confirm Delete</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel and Return</a>
-        </form>
+                        <dt class="col-sm-4 text-secondary mb-3">
+                            <i class="bi bi-tag me-1"></i> Category
+                        </dt>
+                        <dd class="col-sm-8 fw-semibold text-dark mb-3">@Model.CategoryName</dd>
+
+                        <dt class="col-sm-4 text-secondary mb-3">
+                            <i class="bi bi-currency-dollar me-1"></i> Selling Price
+                        </dt>
+                        <dd class="col-sm-8 fw-semibold text-dark mb-3">$@Model.SellingPrice</dd>
+                    </dl>
+                </div>
+                <div class="card-footer bg-light p-3 border-0">
+                    <form asp-action="Delete" method="post" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg px-4 fs-6 d-inline-flex align-items-center gap-2">
+                                <i class="bi bi-trash-fill"></i> Confirm Delete
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary btn-lg px-4 fs-6 d-inline-flex align-items-center gap-2">
+                                <i class="bi bi-arrow-left"></i> Cancel and Return
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
