@@ -60,7 +60,7 @@
                                 <th class="py-3">Phone</th>
                                 <th class="py-3">Email</th>
                                 <th class="py-3 text-center">Total Orders</th>
-                                <th class="py-3 text-center pe-4">Actions</th>
+                                <th class="py-3 text-center pe-4">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -105,12 +105,12 @@
                                             <a asp-action="Edit" asp-route-id="@supplier.Id" class="btn btn-sm btn-outline-secondary" title="Edit Supplier">
                                                 <i class="bi bi-pencil-square text-primary"></i>
                                             </a>
-                                            <button type="button" class="btn btn-sm btn-outline-secondary btn-delete-supplier"
+                                            @* <button type="button" class="btn btn-sm btn-outline-secondary btn-delete-supplier"
                                                     data-id="@supplier.Id"
                                                     data-name="@supplier.Name"
                                                     title="Delete Supplier">
                                                 <i class="bi bi-trash text-danger"></i>
-                                            </button>
+                                            </button> *@
                                         </div>
                                     </td>
                                 </tr>
