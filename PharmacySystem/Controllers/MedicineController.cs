@@ -20,11 +20,15 @@ namespace PharmacyManagement.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchTerm)
         {
-            var medicines = await _unitOfWork.Medicines.FindAllAsync(m => !m.IsDeleted, new[] { "Category" });
-
-            var viewModels = medicines.Select(m => new MedicineIndexViewModel
+             var medicines = await _unitOfWork.Medicines.FindAllAsync(m => !m.IsDeleted, new[] { "Category" });
+              if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var cleanTerm = searchTerm.Trim();
+                medicines = medicines.Where(m => m.Name.Contains(cleanTerm, StringComparison.OrdinalIgnoreCase));
+            }
+               var viewModels = medicines.Select(m => new MedicineIndexViewModel
             {
                 Id = m.Id,
                 Name = m.Name,
@@ -37,8 +41,7 @@ namespace PharmacyManagement.Web.Controllers
 
             return View(viewModels);
         }
-
-        public async Task<IActionResult> Create()
+         public async Task<IActionResult> Create()
         {
             var categories = await _unitOfWork.Categories.GetAllAsync();
 

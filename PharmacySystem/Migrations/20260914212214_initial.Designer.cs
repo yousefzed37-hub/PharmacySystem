@@ -12,8 +12,8 @@ using PharmacySystem.Models.Data;
 namespace PharmacySystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260913181559_Intial_Create")]
-    partial class Intial_Create
+    [Migration("20260914212214_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,29 @@ namespace PharmacySystem.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "a182b8a0-2f22-49f3-8b1e-0d12e3456781",
+                            ConcurrencyStamp = "ac9965c6-60b5-481a-adfe-b0df2561251b",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "b273c9b1-3f33-40a4-9c2f-1e23f4567892",
+                            ConcurrencyStamp = "8d769b15-2f7b-44c2-bae7-b8009de9565f",
+                            Name = "Pharmacist",
+                            NormalizedName = "PHARMACIST"
+                        },
+                        new
+                        {
+                            Id = "c384d0c2-4f44-51b5-ad30-2f34a5678903",
+                            ConcurrencyStamp = "fb37521b-7185-4103-840e-11a0163bea49",
+                            Name = "Cashier",
+                            NormalizedName = "CASHIER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
