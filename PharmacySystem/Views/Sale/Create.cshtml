@@ -9,7 +9,6 @@
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
-                <!-- Card Header -->
                 <div class="card-header text-white p-3 border-0" style="background-color: #0f766e;">
                     <h4 class="mb-0 fw-bold"><i class="bi bi-cart-plus me-2"></i>New Sales Invoice</h4>
                 </div>
@@ -18,7 +17,6 @@
                     <form asp-action="Create" method="post" id="saleForm">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4" role="alert"></div>
 
-                        <!-- Invoice Items Table -->
                         <h5 class="fw-bold mb-3" style="color: #0f766e;">
                             <i class="bi bi-capsule me-2"></i>Medicine Items
                         </h5>
@@ -66,7 +64,6 @@
 
                         <hr class="my-4 text-muted opacity-25" />
 
-                        <!-- Totals Section -->
                         <div class="row justify-content-end">
                             <div class="col-md-5">
                                 <div class="p-3 rounded-3 border-0 shadow-sm" style="background-color: #f8fafc;">
@@ -87,7 +84,6 @@
                             </div>
                         </div>
 
-                        <!-- Buttons -->
                         <div class="d-flex justify-content-between mt-4">
                             <a asp-action="Index" class="btn btn-light rounded-pill px-4">Cancel & Return</a>
                             <button type="submit" class="btn text-white px-5 rounded-pill shadow-sm" style="background-color: #0f766e;">
@@ -104,69 +100,82 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.querySelector('#itemsTable tbody');
+            const addBtn = document.getElementById('addRow');
+            const discountInput = document.getElementById('discountInput');
+
+            // 1. حساب الإجمالي الكلي وإجمالي كل صف
             function calculateTotals() {
                 let subTotal = 0;
-                $('#itemsTable tbody tr').each(function() {
-                    let qty = parseFloat($(this).find('.quantity-input').val()) || 0;
-                    let price = parseFloat($(this).find('.price-input').val()) || 0;
-                    let rowTotal = qty * price;
-                    $(this).find('.row-subtotal').val(rowTotal.toFixed(2));
-                    subTotal += rowTotal;
+                const rows = tableBody.querySelectorAll('tr.item-row');
+
+                rows.forEach(row => {
+                    const qty = parseFloat(row.querySelector('.quantity-input').value) || 0;
+                    const price = parseFloat(row.querySelector('.price-input').value) || 0;
+                    const rowSubtotal = qty * price;
+
+                    row.querySelector('.row-subtotal').value = rowSubtotal.toFixed(2);
+                    subTotal += rowSubtotal;
                 });
 
-                let discount = parseFloat($('#discountInput').val()) || 0;
-                let finalTotal = subTotal - discount;
+                const discount = parseFloat(discountInput.value) || 0;
+                const finalTotal = subTotal - discount;
 
-                $('#displaySubTotal').text('$' + subTotal.toFixed(2));
-                $('#displayTotalAmount').text('$' + (finalTotal > 0 ? finalTotal : 0).toFixed(2));
+                document.getElementById('displaySubTotal').innerText = '$' + subTotal.toFixed(2);
+                document.getElementById('displayTotalAmount').innerText = '$' + (finalTotal > 0 ? finalTotal : 0).toFixed(2);
             }
 
-            $(document).on('input change', '.quantity-input, .price-input, #discountInput', function() {
+            // 2. إعادة ترتيب الـ Index لتوافق الـ Model Binder في ASP.NET Core
+            function reIndexRows() {
+                const rows = tableBody.querySelectorAll('tr.item-row');
+                rows.forEach((row, i) => {
+                    row.querySelector('.medicine-select').setAttribute('name', `Items[${i}].MedicineId`);
+                    row.querySelector('.quantity-input').setAttribute('name', `Items[${i}].Quantity`);
+                    row.querySelector('.price-input').setAttribute('name', `Items[${i}].UnitPrice`);
+                });
+            }
+
+            // 3. إضافة صف دواء جديد
+            addBtn.addEventListener('click', function() {
+                const firstRow = tableBody.querySelector('tr.item-row');
+                const newRow = firstRow.cloneNode(true);
+
+                // تصفير القيم في الصف الجديد
+                newRow.querySelector('.medicine-select').selectedIndex = 0;
+                newRow.querySelector('.quantity-input').value = 1;
+                newRow.querySelector('.price-input').value = '0.00';
+                newRow.querySelector('.row-subtotal').value = '0.00';
+
+                tableBody.appendChild(newRow);
+                reIndexRows();
                 calculateTotals();
             });
 
-            $('#addRow').click(function() {
-                let index = $('#itemsTable tbody tr').length;
-                let newRow = `
-                            <tr class="item-row">
-                                <td>
-                                    <select name="Items[${index}].MedicineId" class="form-select medicine-select rounded-3" required>
-                                        ${$('#itemsTable tbody tr:first .medicine-select').html()}
-                                    </select>
-                                </td>
-                                <td>
-                                    <input name="Items[${index}].Quantity" class="form-control quantity-input rounded-3" type="number" min="1" value="1" required />
-                                </td>
-                                <td>
-                                    <input name="Items[${index}].UnitPrice" class="form-control price-input rounded-3" type="number" step="0.01" value="0.00" required />
-                                </td>
-                                <td>
-                                    <input class="form-control row-subtotal rounded-3 bg-light" type="number" step="0.01" value="0.00" readonly />
-                                </td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-outline-danger btn-sm remove-row rounded-pill"><i class="bi bi-trash"></i></button>
-                                </td>
-                            </tr>`;
-                $('#itemsTable tbody').append(newRow);
-                calculateTotals();
+            // 4. حذف صف
+            tableBody.addEventListener('click', function(e) {
+                const removeBtn = e.target.closest('.remove-row');
+                if (removeBtn) {
+                    const rows = tableBody.querySelectorAll('tr.item-row');
+                    if (rows.length > 1) {
+                        removeBtn.closest('tr').remove();
+                        reIndexRows();
+                        calculateTotals();
+                    }
+                }
             });
 
-            $(document).on('click', '.remove-row', function() {
-                if ($('#itemsTable tbody tr').length > 1) {
-                    $(this).closest('tr').remove();
-                    reIndexRows();
+            // 5. تحديث الأرقام فوراً عند التغيير في الكمية أو السعر
+            tableBody.addEventListener('input', function(e) {
+                if (e.target.classList.contains('quantity-input') || e.target.classList.contains('price-input')) {
                     calculateTotals();
                 }
             });
 
-            function reIndexRows() {
-                $('#itemsTable tbody tr').each(function(i) {
-                    $(this).find('.medicine-select').attr('name', `Items[${i}].MedicineId`);
-                    $(this).find('.quantity-input').attr('name', `Items[${i}].Quantity`);
-                    $(this).find('.price-input').attr('name', `Items[${i}].UnitPrice`);
-                });
-            }
+            discountInput.addEventListener('input', calculateTotals);
+
+            // تشغيل الحسابات أول ما الصفحة تفتح
+            calculateTotals();
         });
     </script>
 }

@@ -26,7 +26,7 @@ namespace PharmacySystem.Controllers
             var users = await _userManager.Users.ToListAsync();
             return View(users);
         }
-
+        [HttpGet]
         public async Task<IActionResult> ManageRoles(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
