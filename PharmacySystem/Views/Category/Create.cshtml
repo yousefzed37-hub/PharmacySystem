@@ -4,37 +4,43 @@
     ViewData["Title"] = "Create Category";
 }
 
-<div class="container mt-4">
-    <h2>Create New Category</h2>
-    <hr />
+<div class="container-fluid pt-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold d-flex align-items-center gap-2" style="color: #1e293b;">
+            <i class="bi bi-plus-square-fill" style="color: #0f766e;"></i> Create New Category
+        </h2>
+    </div>
 
     <div class="row">
-        <div class="col-md-6">
-            <!-- Form points to the Create POST action -->
-            <form asp-action="Create" method="post">
-                <!-- Security token to prevent CSRF attacks -->
-                @Html.AntiForgeryToken()
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-3 p-4">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
 
-                <!-- Form-level validation errors will appear here -->
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                <div class="mb-3">
-                    <label asp-for="Name" class="form-label"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <!-- Property-level validation error for Name -->
-                    <span asp-validation-for="Name" class="text-danger"></span>
-                </div>
+                    <div class="mb-4">
+                        <label asp-for="Name" class="form-label text-secondary fw-semibold">
+                            <i class="bi bi-tag me-1"></i> Category Name
+                        </label>
+                        <input asp-for="Name" class="form-control form-control-lg border-light-subtle shadow-sm" placeholder="Enter category name..." />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-success">Save Category</button>
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                </div>
-            </form>
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-success btn-lg px-4 fs-6 d-inline-flex align-items-center gap-2" style="background-color: #0f766e; border-color: #0f766e;">
+                            <i class="bi bi-check-lg"></i> Save Category
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg px-4 fs-6 d-inline-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Add client-side validation explicitly -->
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
