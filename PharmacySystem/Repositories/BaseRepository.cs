@@ -38,18 +38,40 @@ namespace PharmacyManagement.Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(criteria);
         }
 
-        public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, string[]? includes = null)
-        {
-            IQueryable<T> query = _dbSet.Where(criteria);
+        public async Task<IEnumerable<T>> FindAllAsync(
+            Expression<Func<T, bool>> criteria,
+            string[]? includes = null,
+            Expression<Func<T, object>>? orderBy = null,
+            string orderByDirection = "ASC",
+            int? skip = null,
+            int? take = null)
+                {
+                    IQueryable<T> query = _context.Set<T>().Where(criteria);
 
-            if (includes != null)
-            {
-                foreach (var include in includes)
-                    query = query.Include(include);
-            }
+                    if (includes != null)
+                    {
+                        foreach (var include in includes)
+                        {
+                            query = query.Include(include);
+                        }
+                    }
 
-            return await query.ToListAsync();
-        }
+                    if (orderBy != null)
+                    {
+                        if (orderByDirection.Equals("ASC", StringComparison.OrdinalIgnoreCase))
+                            query = query.OrderBy(orderBy);
+                        else
+                            query = query.OrderByDescending(orderBy);
+                    }
+
+                    if (skip.HasValue)
+                        query = query.Skip(skip.Value);
+
+                    if (take.HasValue)
+                        query = query.Take(take.Value);
+
+                    return await query.ToListAsync();
+                }
 
         public async Task<T> AddAsync(T entity)
         {

@@ -18,12 +18,33 @@ namespace PharmacySystem.Controllers
 
         public async Task<IActionResult> Index()
         {
+
+            var today = DateTime.UtcNow;
+            var After30Day = today.AddDays(30);
+
+            var expiringMedicines = await _unitOfWork.Medicines.FindAllAsync(
+                criteria: m => m.ExpiryDate >= DateTime.UtcNow && m.ExpiryDate <= DateTime.UtcNow.AddDays(30),
+                orderBy: m => m.ExpiryDate,
+                orderByDirection: "ASC",
+                take: 5
+            );
+
+            var lowStockMedicines = await _unitOfWork.Medicines.FindAllAsync(
+                criteria: m => m.StockQuantity <= 5,
+                orderBy: m => m.StockQuantity,
+                orderByDirection: "ASC",
+                take: 5
+            );
             var viewModel = new DashboardViewModel
             {
                 TotalMedicines = await _unitOfWork.Medicines.CountAsync(),
                 TotalCategories = await _unitOfWork.Categories.CountAsync(),
                 TotalSuppliers = await _unitOfWork.Suppliers.CountAsync(),
                 TotalInvoices = await _unitOfWork.Sales.CountAsync(),
+                ExpiringSoonCount = await _unitOfWork.Medicines.CountAsync(),
+                ExpiringMedicines = expiringMedicines.OrderBy(m => m.ExpiryDate).Take(5),
+                LowStockCount = lowStockMedicines.Count(),
+                LowStockMedicines = lowStockMedicines
             };
             return View(viewModel);
         }

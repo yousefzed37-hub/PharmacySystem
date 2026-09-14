@@ -7,12 +7,21 @@ namespace PharmacyManagement.Core.Interfaces
         Task<T?> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();
         Task<T?> FindAsync(Expression<Func<T, bool>> criteria, string[]? includes = null);
-        Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> criteria, string[]? includes = null);
+        Task<IEnumerable<T>> FindAllAsync(
+            Expression<Func<T, bool>> criteria,
+            string[]? includes = null,
+            Expression<Func<T, object>>? orderBy = null,
+            string orderByDirection = "ASC",
+            int? skip = null,
+            int? take = null
+        );
         Task<T> AddAsync(T entity);
         Task AddRangeAsync(IEnumerable<T> entities);
         T Update(T entity);
         void Delete(T entity);
         void DeleteRange(IEnumerable<T> entities);
         Task<int> CountAsync();
+
+
     }
 }

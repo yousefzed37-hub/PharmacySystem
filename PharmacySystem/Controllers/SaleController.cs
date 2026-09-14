@@ -18,7 +18,7 @@ namespace PharmacySystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchTerm)
         {
             // جلب كل الفواتير مع تضمين البنود والأدوية المرتبطة (Eager Loading)
             var sales = await _unitOfWork.Sales.FindAllAsync(
@@ -26,7 +26,14 @@ namespace PharmacySystem.Controllers
                 includes: new[] { "SaleItems", "SaleItems.Medicine" }
             );
 
-            // تحويل القائمة إلى ViewModels للعرض في الـ View
+            // تطبيق البحث وإعادة التعيين لنفس المتغير الأصلي
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var cleanSearch = searchTerm.Trim();
+                sales = sales.Where(s => s.InvoiceNumber.Contains(cleanSearch, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // تحويل القائمة المتفلترة إلى ViewModels للعرض في الـ View
             var salesListViewModel = sales.Select(sale => new SaleDetailsViewModel
             {
                 Id = sale.Id,
@@ -75,12 +82,8 @@ namespace PharmacySystem.Controllers
                 return View(model);
             }
 
-            // جلب ID الكاشير/المستخدم الحالي من الـ Claims تلقائياً
-            //var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             var sale = new Sale
             {
-                //UserId = currentUserId ?? model.UserId,
                 InvoiceNumber = $"INV-{DateTime.UtcNow:yyyyMMddHHmmss}",
                 SaleDate = DateTime.UtcNow,
                 Discount = model.Discount
@@ -130,7 +133,6 @@ namespace PharmacySystem.Controllers
             return RedirectToAction(nameof(Details), new { id = sale.Id });
         }
 
-        // 2. عرض تفاصيل فاتورة واحدة محددة
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
