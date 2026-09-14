@@ -162,6 +162,55 @@
 </div>
 
 @section Scripts {
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = document.getElementById("searchInput");
+            const dateFilter = document.getElementById("dateFilter");
+            const btnReset = document.getElementById("btnReset");
+            const tableRows = document.querySelectorAll("tbody tr");
+
+            function filterOrders() {
+                const query = searchInput.value.trim().toLowerCase();
+                const selectedDate = dateFilter.value; // الصيغة: YYYY-MM-DD
+
+                tableRows.forEach(row => {
+                    // استخراج النصوص من الأعمدة (العمود 1: رقم الأوردر، العمود 2: اسم المورد، العمود 3: التاريخ)
+                    const orderNo = row.cells[0]?.textContent.trim().toLowerCase() || "";
+                    const supplier = row.cells[1]?.textContent.trim().toLowerCase() || "";
+                    const orderDate = row.cells[2]?.textContent.trim() || "";
+
+                    // فحص النص (رقم الأوردر أو اسم المورد)
+                    const matchesText = query === "" || orderNo.includes(query) || supplier.includes(query);
+
+                    // فحص التاريخ
+                    const matchesDate = selectedDate === "" || orderDate.includes(selectedDate);
+
+                    // إظهار أو إخفاء السطر
+                    if (matchesText && matchesDate) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            }
+
+            // تشغيل الفلترة مع الكتابة أو تغيير التاريخ
+            if (searchInput) searchInput.addEventListener("input", filterOrders);
+            if (dateFilter) dateFilter.addEventListener("change", filterOrders);
+
+            // وظيفة زرار الـ Reset
+            if (btnReset) {
+                btnReset.addEventListener("click", function() {
+                    searchInput.value = "";
+                    dateFilter.value = "";
+                    filterOrders();
+                    searchInput.focus();
+                });
+            }
+        });
+    </script>
+
     <script>
         $(document).ready(function () {
             // Live Search Filter

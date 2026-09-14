@@ -30,15 +30,19 @@
     <!-- Search Toolbar -->
     <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
         <div class="card-body p-3">
-            <div class="row g-2 align-items-center">
-                <div class="col-md-9">
+            <div class="row g-2 mb-4">
+                <!-- Search Input -->
+                <div class="col-md-9 col-lg-10">
                     <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                        <input type="text" id="supplierSearchInput" class="form-control bg-light border-start-0" placeholder="Search by supplier name, email, or phone number..." />
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" id="supplierSearchInput" class="form-control border-start-0"
+                               placeholder="Search by supplier name, email, or phone number..." autocomplete="off" />
                     </div>
                 </div>
-                <div class="col-md-3 d-flex justify-content-end">
-                    <button type="button" id="btnResetSearch" class="btn btn-light border text-muted px-4 w-100">
+
+                <!-- Reset Button -->
+                <div class="col-md-3 col-lg-2">
+                    <button type="button" id="btnResetSuppliers" class="btn btn-outline-secondary w-100">
                         <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
                     </button>
                 </div>
@@ -161,6 +165,55 @@
 </div>
 
 @section Scripts {
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchInput = document.getElementById("supplierSearchInput");
+            const btnReset = document.getElementById("btnResetSuppliers");
+            const tableRows = document.querySelectorAll("tbody tr");
+
+            function filterSuppliers() {
+                const query = searchInput.value.trim().toLowerCase();
+
+                tableRows.forEach(row => {
+                    // سحب النصوص من الأعمدة (الكود، اسم الشركة، الفون، الإيميل)
+                    const idText = row.cells[0]?.textContent.trim().toLowerCase() || "";
+                    const nameText = row.cells[1]?.textContent.trim().toLowerCase() || "";
+                    const phoneText = row.cells[2]?.textContent.trim().toLowerCase() || "";
+                    const emailText = row.cells[3]?.textContent.trim().toLowerCase() || "";
+
+                    // البحث لو الكلمة موجودة في أي خانة منهم
+                    const isMatch = query === "" ||
+                        idText.includes(query) ||
+                        nameText.includes(query) ||
+                        phoneText.includes(query) ||
+                        emailText.includes(query);
+
+                    if (isMatch) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            }
+
+            // فلترة فورية بمجرد كتابة أي حرف أو مسح
+            if (searchInput) {
+                searchInput.addEventListener("input", filterSuppliers);
+            }
+
+            // زرار Reset
+            if (btnReset) {
+                btnReset.addEventListener("click", function() {
+                    searchInput.value = "";
+                    filterSuppliers();
+                    searchInput.focus();
+                });
+            }
+        });
+    </script>
+
+
     <script>
         $(document).ready(function () {
             let supplierIdToDelete = 0;
