@@ -28,7 +28,7 @@ namespace PharmacySystem
 
             // --- إعدادات Identity مع تفعيل تأكيد الإيميل ---
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
-                options.SignIn.RequireConfirmedAccount = false; // <-- غيرناها هنا لـ true
+                options.SignIn.RequireConfirmedAccount = true; // <-- غيرناها هنا لـ true
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 6;
                 options.Password.RequireNonAlphanumeric = false;
