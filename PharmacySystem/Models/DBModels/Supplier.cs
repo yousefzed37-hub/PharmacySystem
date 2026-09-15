@@ -17,8 +17,6 @@ namespace PharmacySystem.Models.DBModels
 
         public string? Address { get; set; }
 
-        public string? ImageUrl { get; set; }
-        
         public bool IsDeleted { get; set; }
 
         public ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();

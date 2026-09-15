@@ -7,12 +7,12 @@ namespace PharmacySystem.Models.DBModels
     {
         public int Id { get; set; }
 
-        public int SupplierId { get; set; }
 
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
         public decimal TotalCost { get; set; }
 
+        public int SupplierId { get; set; }
         public Supplier? Supplier { get; set; }
         public ICollection<PurchaseOrderItem> PurchaseOrderItems { get; set; } = new List<PurchaseOrderItem>();
     }

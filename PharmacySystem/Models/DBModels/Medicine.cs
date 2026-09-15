@@ -9,7 +9,6 @@ namespace PharmacySystem.Models.DBModels
     {
          public int Id { get; set; }
 
-         public int CategoryId { get; set; }
 
          public string Name { get; set; } = string.Empty;
          public decimal CostPrice { get; set; }
@@ -24,6 +23,7 @@ namespace PharmacySystem.Models.DBModels
 
         public bool IsDeleted { get; set; } = false;
 
+         public int CategoryId { get; set; }
          public Category? Category { get; set; }
         public ICollection<SaleItem> SaleItems { get; set; } = new List<SaleItem>();
         public ICollection<PurchaseOrderItem> PurchaseOrderItems { get; set; } = new List<PurchaseOrderItem>();
