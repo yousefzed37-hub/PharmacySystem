@@ -4,6 +4,9 @@ using PharmacyManagement.Core.Interfaces;
 using PharmacyManagement.Infrastructure.Repositories;
 using PharmacySystem.Models.Data;
 
+using Microsoft.AspNetCore.Identity.UI.Services;
+using PharmacySystem.Services;
+
 namespace PharmacySystem
 {
     public class Program
@@ -21,7 +24,7 @@ namespace PharmacySystem
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // --- إضافة خدمة إرسال الإيميلات ---
-            builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, PharmacySystem.Services.EmailSender>();
+            builder.Services.AddTransient<IEmailSender,EmailSender>();
 
             // --- إعدادات Identity مع تفعيل تأكيد الإيميل ---
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
