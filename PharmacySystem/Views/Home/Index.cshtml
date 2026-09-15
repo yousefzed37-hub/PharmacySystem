@@ -18,32 +18,98 @@
         </a>
     </div>
 
-    <!-- Stats Cards Grid (6 Cards Layout) -->
+    <!-- Stats Cards Grid (3 per row) -->
     <div class="row g-3 mb-4">
-        <div class="col-md-2">
+        <!-- 1. Medicines -->
+        <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-3 p-3 bg-white border-start border-4" style="border-color: #0f766e !important;">
-                <span class="text-muted small fw-bold text-uppercase">Medicines</span>
-                <h3 class="fw-bold mb-0 mt-1" style="color: #0f766e;">@Model.TotalMedicines</h3>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase">Medicines</span>
+                        <h2 class="fw-bold mb-0 mt-1" style="color: #0f766e;">@Model.TotalMedicines</h2>
+                    </div>
+                    <div class="rounded-circle p-3" style="background-color: #e6f4f1; color: #0f766e;">
+                        <i class="bi bi-capsule fs-3"></i>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-2">
+
+        <!-- 2. Categories -->
+        <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-3 p-3 bg-white border-start border-4 border-info">
-                <span class="text-muted small fw-bold text-uppercase">Categories</span>
-                <h3 class="fw-bold mb-0 mt-1 text-info">@Model.TotalCategories</h3>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase">Categories</span>
+                        <h2 class="fw-bold mb-0 mt-1 text-info">@Model.TotalCategories</h2>
+                    </div>
+                    <div class="rounded-circle p-3 bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-tags fs-3"></i>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-2">
+
+        <!-- 3. Suppliers -->
+        <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-3 p-3 bg-white border-start border-4 border-secondary">
-                <span class="text-muted small fw-bold text-uppercase">Suppliers</span>
-                <h3 class="fw-bold mb-0 mt-1 text-secondary">@Model.TotalSuppliers</h3>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase">Suppliers</span>
+                        <h2 class="fw-bold mb-0 mt-1 text-secondary">@Model.TotalSuppliers</h2>
+                    </div>
+                    <div class="rounded-circle p-3 bg-secondary bg-opacity-10 text-secondary">
+                        <i class="bi bi-truck fs-3"></i>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-2">
+
+        <!-- 4. Sales Invoices -->
+        <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-3 p-3 bg-white border-start border-4 border-warning">
-                <span class="text-muted small fw-bold text-uppercase">Invoices</span>
-                <h3 class="fw-bold mb-0 mt-1 text-warning">@Model.TotalInvoices</h3>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase">Invoices</span>
+                        <h2 class="fw-bold mb-0 mt-1 text-warning">@Model.TotalInvoices</h2>
+                    </div>
+                    <div class="rounded-circle p-3 bg-warning bg-opacity-10 text-warning">
+                        <i class="bi bi-receipt fs-3"></i>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- 5. Expiring Soon -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 p-3 bg-white border-start border-4 border-danger">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase">Expiring Soon</span>
+                        <h2 class="fw-bold mb-0 mt-1 text-danger">@Model.ExpiringSoonCount</h2>
+                    </div>
+                    <div class="rounded-circle p-3 bg-danger bg-opacity-10 text-danger">
+                        <i class="bi bi-exclamation-triangle fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Low Stock -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 p-3 bg-white border-start border-4 border-dark">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase">Low Stock (&lt;=5)</span>
+                        <h2 class="fw-bold mb-0 mt-1 text-dark">@Model.LowStockCount</h2>
+                    </div>
+                    <div class="rounded-circle p-3 bg-dark bg-opacity-10 text-dark">
+                        <i class="bi bi-box-seam fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
         <!-- Expiring Soon Alert -->
         <div class="col-md-2">
