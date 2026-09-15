@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PharmacyManagement.Core.Interfaces;
@@ -6,6 +7,7 @@ using PharmacyManagement.Web.ViewModels.Medicines;
 using PharmacySystem.Core;
 using PharmacySystem.Models.DBModels;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -40,9 +42,10 @@ namespace PharmacyManagement.Web.Controllers
                 Name = m.Name,
                 SellingPrice = m.SalePrice,
                 StockQuantity = m.StockQuantity,
-                ReorderLevel = m.ReorderLevel, // <-- تم التمرير هنا لضمان عمل IsLowStock و IsOutOfStock
+                ReorderLevel = m.ReorderLevel,
                 ExpiryDate = m.ExpiryDate,
-                CategoryName = m.Category?.Name ?? "Uncategorized"
+                CategoryName = m.Category?.Name ?? "Uncategorized",
+                ImageUrl = m.ImageUrl ?? string.Empty
             }).ToList();
 
             var count = viewModels.Count();
@@ -68,33 +71,27 @@ namespace PharmacyManagement.Web.Controllers
                 Name = medicine.Name,
                 SellingPrice = medicine.SalePrice,
                 StockQuantity = medicine.StockQuantity,
-                ReorderLevel = medicine.ReorderLevel, // <-- تم التمرير هنا أيضاً
+                ReorderLevel = medicine.ReorderLevel,
                 ExpiryDate = medicine.ExpiryDate,
                 CategoryName = medicine.Category?.Name ?? "Uncategorized",
-
-
-                // Additional properties for detailed information
-                ActiveIngredient = medicine.ActiveIngredient,
-                Indications = medicine.Indications,
-                Dosage = medicine.Dosage,
-                SideEffects = medicine.SideEffects,
-                Contraindications = medicine.Contraindications,
-                ShelfLocation = medicine.ShelfLocation
+                ImageUrl = medicine.ImageUrl ?? string.Empty
             };
 
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int? categoryId)
         {
             var categories = await _unitOfWork.Categories.GetAllAsync();
 
             var viewModel = new MedicineFormViewModel
             {
+                CategoryId = categoryId ?? 0,
                 Categories = categories.Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
-                    Text = c.Name
+                    Text = c.Name,
+                    Selected = categoryId.HasValue && c.Id == categoryId.Value
                 })
             };
 
@@ -112,6 +109,8 @@ namespace PharmacyManagement.Web.Controllers
                 return View(viewModel);
             }
 
+            string? imageUrl = await UploadImageAsync(viewModel.ImageFile);
+
             var newMedicine = new Medicine
             {
                 Name = viewModel.Name,
@@ -121,14 +120,7 @@ namespace PharmacyManagement.Web.Controllers
                 StockQuantity = viewModel.StockQuantity,
                 ReorderLevel = viewModel.ReorderLevel,
                 ExpiryDate = viewModel.ExpiryDate ?? DateTime.MaxValue,
-
-                // Additional properties for detailed information
-                ActiveIngredient = viewModel.ActiveIngredient,
-                Indications = viewModel.Indications,
-                Dosage = viewModel.Dosage,
-                SideEffects = viewModel.SideEffects,
-                Contraindications = viewModel.Contraindications,
-                ShelfLocation = viewModel.ShelfLocation
+                ImageUrl = imageUrl
             };
 
             await _unitOfWork.Medicines.AddAsync(newMedicine);
@@ -145,7 +137,14 @@ namespace PharmacyManagement.Web.Controllers
 
             var categories = await _unitOfWork.Categories.GetAllAsync();
 
-            var viewModel = new MedicineFormViewModel
+            var viewModel = GetViewModel(medicine, categories);
+
+            return View(viewModel);
+        }
+
+        private static MedicineFormViewModel GetViewModel(Medicine medicine, IEnumerable<PharmacySystem.Models.Category> categories)
+        {
+            return new MedicineFormViewModel
             {
                 Id = medicine.Id,
                 Name = medicine.Name,
@@ -155,10 +154,9 @@ namespace PharmacyManagement.Web.Controllers
                 StockQuantity = medicine.StockQuantity,
                 ReorderLevel = medicine.ReorderLevel,
                 ExpiryDate = medicine.ExpiryDate,
+                ExistingImageUrl = medicine.ImageUrl,
                 Categories = categories.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
             };
-
-            return View(viewModel);
         }
 
         [HttpPost]
@@ -177,6 +175,12 @@ namespace PharmacyManagement.Web.Controllers
             var medicine = await _unitOfWork.Medicines.GetByIdAsync(id);
             if (medicine == null || medicine.IsDeleted) return NotFound();
 
+            // حفظ الصورة الجديدة لو اتغيرت، أو الإبقاء على القديمة
+            if (viewModel.ImageFile != null)
+            {
+                medicine.ImageUrl = await UploadImageAsync(viewModel.ImageFile);
+            }
+
             medicine.Name = viewModel.Name;
             medicine.SalePrice = viewModel.SellingPrice;
             medicine.CostPrice = viewModel.CostPrice;
@@ -189,6 +193,20 @@ namespace PharmacyManagement.Web.Controllers
             await _unitOfWork.CompleteAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> ExpiringSoon()
+        {
+            var today = DateTime.UtcNow;
+            var thirtyDaysFromNow = today.AddDays(30);
+
+            var expiringMedicines = await _unitOfWork.Medicines.FindAllAsync(
+                criteria: m => m.ExpiryDate >= today && m.ExpiryDate <= thirtyDaysFromNow,
+                orderBy: m => m.ExpiryDate,
+                orderByDirection: "ASC"
+            );
+
+            return View(expiringMedicines);
         }
 
         public async Task<IActionResult> Delete(int id)
@@ -267,6 +285,29 @@ namespace PharmacyManagement.Web.Controllers
             {
                 return Json(new { success = false, message = "DB Error: " + ex.Message });
             }
+        }
+
+        private async Task<string?> UploadImageAsync(IFormFile? imageFile)
+        {
+            if (imageFile == null || imageFile.Length == 0)
+                return null;
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "medicines");
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+
+            return "/images/medicines/" + uniqueFileName;
         }
     }
 }
