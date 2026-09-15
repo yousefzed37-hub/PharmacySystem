@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PharmacyManagement.Core.Interfaces;
 using PharmacyManagement.Web.ViewModels.Medicines;
+using PharmacySystem.Core;
 using PharmacySystem.Models.DBModels;
 using System;
 using System.Linq;
@@ -20,15 +21,24 @@ namespace PharmacyManagement.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index(string? searchTerm)
+        public async Task<IActionResult> Index(string? searchTerm, int? pageNumber)
         {
-             var medicines = await _unitOfWork.Medicines.FindAllAsync(m => !m.IsDeleted, new[] { "Category" });
-              if (!string.IsNullOrWhiteSpace(searchTerm))
+            // 1. تحديد حجم الصفحة ورقم الصفحة الحالية
+            int pageSize = 8; // عدد الكروت في كل صفحة
+            int pageIndex = pageNumber ?? 1;
+
+            // 2. جلب البيانات من الـ Repository
+            var medicines = await _unitOfWork.Medicines.FindAllAsync(m => !m.IsDeleted, new[] { "Category" });
+
+            // 3. تطبيق الفلترة بالـ Search Term
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 var cleanTerm = searchTerm.Trim();
                 medicines = medicines.Where(m => m.Name.Contains(cleanTerm, StringComparison.OrdinalIgnoreCase));
             }
-               var viewModels = medicines.Select(m => new MedicineIndexViewModel
+
+            // 4. تحويل النتائج لـ ViewModels
+            var viewModels = medicines.Select(m => new MedicineIndexViewModel
             {
                 Id = m.Id,
                 Name = m.Name,
@@ -39,9 +49,16 @@ namespace PharmacyManagement.Web.Controllers
                 IsLowStock = m.StockQuantity <= m.ReorderLevel
             }).ToList();
 
-            return View(viewModels);
+            // 5. حساب الإجمالي واقتصاص الصفحة الحالية (Pagination Logic)
+            var count = viewModels.Count();
+            var items = viewModels.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+            // 6. تغليف العناصر في PaginatedList وإرسالها للـ View
+            var paginatedModel = new PaginatedList<MedicineIndexViewModel>(items, count, pageIndex, pageSize);
+
+            return View(paginatedModel);
         }
-         public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create()
         {
             var categories = await _unitOfWork.Categories.GetAllAsync();
 

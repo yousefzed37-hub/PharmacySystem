@@ -1,4 +1,6 @@
-﻿@model IEnumerable<PharmacyManagement.Web.ViewModels.Medicines.MedicineIndexViewModel>
+﻿@using PharmacyManagement.Web.ViewModels.Medicines;
+@using PharmacySystem.Core
+@model PaginatedList<PharmacyManagement.Web.ViewModels.Medicines.MedicineIndexViewModel>
 
 @{
     ViewData["Title"] = "Medicines List";
@@ -27,7 +29,7 @@
                         <input type="text"
                                id="searchInput"
                                class="form-control border-start-0 ps-0"
-                               placeholder="Type to filter medicines instantly..."
+                               placeholder="Type to filter medicines in current page..."
                                autocomplete="off" />
                     </div>
                 </div>
@@ -134,8 +136,54 @@
             </div>
         }
     </div>
-</div>
 
+    <!-- Pagination Controls -->
+    @if (Model != null && Model.TotalPages > 1)
+    {
+        <div class="d-flex flex-column align-items-center justify-content-center gap-2 mt-4 pb-3" id="paginationContainer">
+            <nav>
+                <ul class="pagination pagination-sm mb-0 gap-1">
+                    <!-- Previous Button -->
+                    <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                        <a asp-action="Index"
+                           asp-route-pageNumber="@(Model.PageIndex - 1)"
+                           class="page-link rounded-2 text-secondary border-0 bg-light px-3 py-2">
+                            <i class="bi bi-chevron-left me-1"></i> Previous
+                        </a>
+                    </li>
+
+                    <!-- Numbered Page Buttons -->
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                            <a asp-action="Index"
+                               asp-route-pageNumber="@i"
+                               class="page-link rounded-2 border-0 px-3 py-2 fw-semibold @(i == Model.PageIndex ? "text-white" : "text-dark bg-light")"
+                               style="@(i == Model.PageIndex ? "background-color: #0f766e;" : "")">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Next Button -->
+                    <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                        <a asp-action="Index"
+                           asp-route-pageNumber="@(Model.PageIndex + 1)"
+                           class="page-link rounded-2 text-secondary border-0 bg-light px-3 py-2">
+                            Next <i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Page Counter Info Text -->
+            <div>
+                <span class="text-muted small fw-semibold">
+                    Page <strong class="text-dark">@Model.PageIndex</strong> of <strong class="text-dark">@Model.TotalPages</strong>
+                </span>
+            </div>
+        </div>
+    }
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -143,6 +191,7 @@
             const clearSearchBtn = document.getElementById('clearSearchBtn');
             const cards = document.querySelectorAll('.medicine-card-item');
             const noResultsCard = document.getElementById('noResultsCard');
+            const paginationContainer = document.getElementById('paginationContainer');
 
             function filterCards() {
                 const term = searchInput.value.toLowerCase().trim();
@@ -160,6 +209,11 @@
 
                 if (noResultsCard) {
                     noResultsCard.style.display = (visibleCount === 0 && cards.length > 0) ? '' : 'none';
+                }
+
+                // إخفاء الـ Pagination أثناء الـ Search اللحظي لتفادي اللخبطة
+                if (paginationContainer) {
+                    paginationContainer.style.display = term.length > 0 ? 'none' : 'flex';
                 }
             }
 
