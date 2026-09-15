@@ -1,10 +1,24 @@
 ﻿@using PharmacyManagement.Web.ViewModels.Medicines;
-@using PharmacySystem.Core
+@using PharmacySystem.Core;
 @model PaginatedList<PharmacyManagement.Web.ViewModels.Medicines.MedicineIndexViewModel>
 
 @{
     ViewData["Title"] = "Medicines List";
 }
+
+<!-- CSS Style for Hover Animation & Theme Customization -->
+<style>
+    .medicine-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .medicine-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12) !important;
+    }
+    .hover-teal:hover {
+        color: #0f766e !important;
+    }
+</style>
 
 <div class="container-fluid pt-3">
     <!-- Header -->
@@ -49,69 +63,72 @@
             @foreach (var medicine in Model)
             {
                 <div class="col-12 col-md-6 col-lg-4 col-xl-3 medicine-card-item">
-                    <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
-                        <!-- Card Header -->
+                    <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden medicine-card">
+
+                        <!-- Header: Category & Stock Badges -->
                         <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center pt-3 px-3">
                             <span class="badge bg-secondary bg-opacity-10 text-secondary border fw-normal px-2 py-1">
                                 <i class="bi bi-tags me-1"></i>@medicine.CategoryName
                             </span>
-                            @if (medicine.IsLowStock == true)
+                            @if (medicine.IsOutOfStock)
                             {
                                 <span class="badge bg-danger rounded-pill px-2 py-1">
-                                    <i class="bi bi-exclamation-triangle-fill"></i> Low Stock
+                                    <i class="bi bi-x-circle-fill me-1"></i> Out of Stock
+                                </span>
+                            }
+                            else if (medicine.IsLowStock)
+                            {
+                                <span class="badge bg-warning text-dark rounded-pill px-2 py-1">
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i> Low Stock
                                 </span>
                             }
                             else
                             {
                                 <span class="badge bg-success rounded-pill px-2 py-1">
-                                    <i class="bi bi-check-circle-fill"></i> In Stock
+                                    <i class="bi bi-check-circle-fill me-1"></i> In Stock
                                 </span>
                             }
                         </div>
 
-                        <!-- Card Body -->
-                        <div class="card-body px-3 py-2">
-                            <h5 class="fw-bold text-dark mb-2 medicine-name">
-                                <i class="bi bi-capsule-pill me-1" style="color: #0f766e;"></i> @medicine.Name
-                            </h5>
+                        <!-- Card Body: Large Name & Info -->
+                        <div class="card-body px-3 py-3">
+                            <h4 class="fw-bold mb-2 medicine-name">
+                                <a asp-action="Details" asp-route-id="@medicine.Id" class="text-decoration-none text-dark hover-teal">
+                                    <i class="bi bi-capsule-pill me-1" style="color: #0f766e;"></i> @medicine.Name
+                                </a>
+                            </h4>
 
-                            <div class="d-flex justify-content-between align-items-center my-3">
+                            <div class="d-flex justify-content-between align-items-center my-3 bg-light p-2 rounded-2">
                                 <div>
-                                    <small class="text-muted d-block">Price</small>
+                                    <small class="text-muted d-block" style="font-size: 0.75rem;">Price</small>
                                     <span class="fs-5 fw-bold text-success">$@medicine.SellingPrice</span>
                                 </div>
                                 <div class="text-end">
-                                    <small class="text-muted d-block">Quantity</small>
-                                    <span class="fs-6 fw-semibold text-dark">@medicine.StockQuantity units</span>
+                                    <small class="text-muted d-block" style="font-size: 0.75rem;">Quantity</small>
+                                    <span class="fs-6 fw-bold text-dark">@medicine.StockQuantity units</span>
                                 </div>
                             </div>
 
-                            <div class="border-top pt-2">
-                                <small class="text-muted d-block mb-1">Expiry Date:</small>
-                                @if (medicine.IsExpired == true)
-                                {
-                                    <span class="badge bg-danger bg-opacity-10 text-danger fw-bold">
-                                        <i class="bi bi-x-circle-fill me-1"></i>
-                                        @(medicine.ExpiryDate.HasValue ? medicine.ExpiryDate.Value.ToString("yyyy-MM-dd") : "No Date") (Expired)
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="text-secondary fw-medium">
-                                        <i class="bi bi-calendar-event me-1"></i>
+                            <div class="pt-1">
+                                <small class="text-muted d-block" style="font-size: 0.8rem;">
+                                    <i class="bi bi-calendar-event me-1"></i> Expiry: 
+                                    <span class="fw-semibold text-secondary">
                                         @(medicine.ExpiryDate.HasValue ? medicine.ExpiryDate.Value.ToString("yyyy-MM-dd") : "No Date")
                                     </span>
-                                }
+                                </small>
                             </div>
                         </div>
 
-                        <!-- Card Footer / Actions -->
+                        <!-- Card Footer: 3 Action Buttons -->
                         <div class="card-footer bg-white border-0 d-flex gap-2 p-3 pt-0">
-                            <a asp-action="Edit" asp-route-id="@medicine.Id" class="btn btn-sm btn-outline-warning w-50 d-inline-flex align-items-center justify-content-center gap-1">
-                                <i class="bi bi-pencil-square"></i> Edit
+                            <a asp-action="Details" asp-route-id="@medicine.Id" class="btn btn-sm btn-outline-secondary w-33 d-inline-flex align-items-center justify-content-center" title="Details">
+                                <i class="bi bi-eye"></i>
                             </a>
-                            <a asp-action="Delete" asp-route-id="@medicine.Id" class="btn btn-sm btn-outline-danger w-50 d-inline-flex align-items-center justify-content-center gap-1">
-                                <i class="bi bi-trash"></i> Delete
+                            <a asp-action="Edit" asp-route-id="@medicine.Id" class="btn btn-sm btn-outline-warning w-33 d-inline-flex align-items-center justify-content-center" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@medicine.Id" class="btn btn-sm btn-outline-danger w-33 d-inline-flex align-items-center justify-content-center" title="Delete">
+                                <i class="bi bi-trash"></i>
                             </a>
                         </div>
                     </div>
@@ -143,7 +160,6 @@
         <div class="d-flex flex-column align-items-center justify-content-center gap-2 mt-4 pb-3" id="paginationContainer">
             <nav>
                 <ul class="pagination pagination-sm mb-0 gap-1">
-                    <!-- Previous Button -->
                     <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
                         <a asp-action="Index"
                            asp-route-pageNumber="@(Model.PageIndex - 1)"
@@ -152,7 +168,6 @@
                         </a>
                     </li>
 
-                    <!-- Numbered Page Buttons -->
                     @for (int i = 1; i <= Model.TotalPages; i++)
                     {
                         <li class="page-item @(i == Model.PageIndex ? "active" : "")">
@@ -165,7 +180,6 @@
                         </li>
                     }
 
-                    <!-- Next Button -->
                     <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
                         <a asp-action="Index"
                            asp-route-pageNumber="@(Model.PageIndex + 1)"
@@ -176,7 +190,6 @@
                 </ul>
             </nav>
 
-            <!-- Page Counter Info Text -->
             <div>
                 <span class="text-muted small fw-semibold">
                     Page <strong class="text-dark">@Model.PageIndex</strong> of <strong class="text-dark">@Model.TotalPages</strong>
@@ -184,6 +197,8 @@
             </div>
         </div>
     }
+</div>
+
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -211,16 +226,13 @@
                     noResultsCard.style.display = (visibleCount === 0 && cards.length > 0) ? '' : 'none';
                 }
 
-                // إخفاء الـ Pagination أثناء الـ Search اللحظي لتفادي اللخبطة
                 if (paginationContainer) {
                     paginationContainer.style.display = term.length > 0 ? 'none' : 'flex';
                 }
             }
 
-            // Real-time Event Listener
             searchInput.addEventListener('input', filterCards);
 
-            // Clear Button Event Listener
             clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = '';
                 filterCards();

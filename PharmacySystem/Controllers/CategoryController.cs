@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PharmacyManagement.Core.Interfaces;
 using PharmacyManagement.Web.ViewModels.Categories;
+using PharmacyManagement.Web.ViewModels.Medicines;
 using PharmacySystem.Models;
 using PharmacySystem.Models.DBModels;
 using System.Linq;
@@ -19,19 +20,24 @@ namespace PharmacyManagement.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index()
+       public async Task<IActionResult> Index()
         {
-            var categories = await _unitOfWork.Categories.FindAllAsync(c => !c.IsDeleted);
+            // 1. جلب كل الأقسام مع الأدوية المربوطة بيها بـ Include/Navigation Property
+            var categories = await _unitOfWork.Categories.FindAllAsync(c => !c.IsDeleted, new[] { "Medicines" });
 
+            // 2. حساب عدد الأدوية غير الممسوحة لكل قسم
             var viewModels = categories.Select(c => new CategoryIndexViewModel
             {
                 Id = c.Id,
-                Name = c.Name
+                Name = c.Name,
+                Description = c.Description,
+                // هنا بيحسب العدد تلقائياً بناءً على الأدوية المربوطة بالقسم
+                MedicinesCount = c.Medicines != null ? c.Medicines.Count(m => !m.IsDeleted) : 0
             }).ToList();
 
             return View(viewModels);
         }
-
+       
         public IActionResult Create()
         {
             var viewModel = new CategoryFormViewModel();
@@ -46,7 +52,8 @@ namespace PharmacyManagement.Web.Controllers
 
             var newCategory = new Category
             {
-                Name = viewModel.Name
+                Name = viewModel.Name,
+                Description = viewModel.Description
             };
 
             await _unitOfWork.Categories.AddAsync(newCategory);
@@ -64,7 +71,8 @@ namespace PharmacyManagement.Web.Controllers
             var viewModel = new CategoryFormViewModel
             {
                 Id = category.Id,
-                Name = category.Name
+                Name = category.Name,
+                Description = category.Description
             };
 
             return View(viewModel);
@@ -82,6 +90,7 @@ namespace PharmacyManagement.Web.Controllers
             if (category == null) return NotFound();
 
             category.Name = viewModel.Name;
+            category.Description = viewModel.Description;
 
             _unitOfWork.Categories.Update(category);
             await _unitOfWork.CompleteAsync();
@@ -98,7 +107,8 @@ namespace PharmacyManagement.Web.Controllers
             var viewModel = new CategoryIndexViewModel
             {
                 Id = category.Id,
-                Name = category.Name
+                Name = category.Name,
+                Description = category.Description
             };
 
             return View(viewModel);

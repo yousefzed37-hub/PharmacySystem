@@ -4,91 +4,132 @@
     ViewData["Title"] = "Edit Medicine";
 }
 
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #0f766e !important;
+        box-shadow: 0 0 0 0.25rem rgba(15, 118, 110, 0.15) !important;
+    }
+
+    .input-group-text {
+        background-color: #f8fafc;
+        color: #64748b;
+    }
+</style>
+
 <div class="container-fluid pt-3">
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold d-flex align-items-center gap-2" style="color: #1e293b;">
-            <i class="bi bi-pencil-square" style="color: #0f766e;"></i> Edit Medicine
-        </h2>
+        <div>
+            <h2 class="fw-bold d-flex align-items-center gap-2 mb-1" style="color: #1e293b;">
+                <i class="bi bi-pencil-square" style="color: #0f766e;"></i> Edit Medicine
+            </h2>
+            <p class="text-muted small mb-0">Update the product specifications and inventory levels.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary px-3 d-inline-flex align-items-center gap-2">
+            <i class="bi bi-arrow-left"></i> Back to Catalog
+        </a>
     </div>
 
+    <!-- Form Card -->
     <div class="row">
-        <div class="col-md-8">
-            <div class="card border-0 shadow-sm rounded-3 p-4">
-                <form asp-action="Edit" method="post">
-                    @Html.AntiForgeryToken()
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="col-lg-9 col-xl-8">
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4" role="alert"></div>
 
-                    <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="Id" />
 
-                    <div class="mb-3">
-                        <label asp-for="Name" class="form-label text-secondary fw-semibold">
-                            <i class="bi bi-capsule me-1"></i> Medicine Name
-                        </label>
-                        <input asp-for="Name" class="form-control form-control-lg border-light-subtle shadow-sm" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="CategoryId" class="form-label text-secondary fw-semibold">
-                            <i class="bi bi-tag me-1"></i> Category
-                        </label>
-                        <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select form-select-lg border-light-subtle shadow-sm">
-                            <option value="">-- Select a Category --</option>
-                        </select>
-                        <span asp-validation-for="CategoryId" class="text-danger"></span>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="CostPrice" class="form-label text-secondary fw-semibold">
-                                <i class="bi bi-cash-stack me-1"></i> Cost Price ($)
-                            </label>
-                            <input asp-for="CostPrice" class="form-control form-control-lg border-light-subtle shadow-sm" type="number" step="0.01" />
-                            <span asp-validation-for="CostPrice" class="text-danger"></span>
+                        <!-- Medicine Name -->
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label text-secondary fw-semibold small"></label>
+                            <div class="input-group">
+                                <span class="input-group-text border-end-0">
+                                    <i class="bi bi-capsule" style="color: #0f766e;"></i>
+                                </span>
+                                <input asp-for="Name" class="form-control border-start-0 ps-0" placeholder="e.g. Panadol Extra" />
+                            </div>
+                            <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="SellingPrice" class="form-label text-secondary fw-semibold">
-                                <i class="bi bi-receipt me-1"></i> Selling Price ($)
-                            </label>
-                            <input asp-for="SellingPrice" class="form-control form-control-lg border-light-subtle shadow-sm" type="number" step="0.01" />
-                            <span asp-validation-for="SellingPrice" class="text-danger"></span>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="StockQuantity" class="form-label text-secondary fw-semibold">
-                                <i class="bi bi-boxes me-1"></i> Current Stock
-                            </label>
-                            <input asp-for="StockQuantity" class="form-control form-control-lg border-light-subtle shadow-sm" type="number" />
-                            <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                        <!-- Category Selection -->
+                        <div class="mb-4">
+                            <label asp-for="CategoryId" class="form-label text-secondary fw-semibold small"></label>
+                            <div class="input-group">
+                                <span class="input-group-text border-end-0">
+                                    <i class="bi bi-tags" style="color: #0f766e;"></i>
+                                </span>
+                                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select border-start-0 ps-0">
+                                    <option value="">-- Select Category --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="CategoryId" class="text-danger small mt-1 d-block"></span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="ReorderLevel" class="form-label text-secondary fw-semibold">
-                                <i class="bi bi-bell me-1"></i> Reorder Alert Level
-                            </label>
-                            <input asp-for="ReorderLevel" class="form-control form-control-lg border-light-subtle shadow-sm" type="number" />
-                            <span asp-validation-for="ReorderLevel" class="text-danger"></span>
+
+                        <!-- Pricing Section -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="CostPrice" class="form-label text-secondary fw-semibold small"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text border-end-0"><i class="bi bi-currency-dollar"></i></span>
+                                    <input asp-for="CostPrice" class="form-control border-start-0 ps-0" type="number" step="0.01" />
+                                </div>
+                                <span asp-validation-for="CostPrice" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="SellingPrice" class="form-label text-secondary fw-semibold small"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text border-end-0 text-success"><i class="bi bi-currency-dollar"></i></span>
+                                    <input asp-for="SellingPrice" class="form-control border-start-0 ps-0 fw-semibold text-success" type="number" step="0.01" />
+                                </div>
+                                <span asp-validation-for="SellingPrice" class="text-danger small mt-1 d-block"></span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="mb-4">
-                        <label asp-for="ExpiryDate" class="form-label text-secondary fw-semibold">
-                            <i class="bi bi-calendar-check me-1"></i> Expiration Date
-                        </label>
-                        <input asp-for="ExpiryDate" class="form-control form-control-lg border-light-subtle shadow-sm" type="date" />
-                        <span asp-validation-for="ExpiryDate" class="text-danger"></span>
-                    </div>
+                        <!-- Stock Controls Section -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="StockQuantity" class="form-label text-secondary fw-semibold small"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text border-end-0"><i class="bi bi-boxes"></i></span>
+                                    <input asp-for="StockQuantity" class="form-control border-start-0 ps-0" type="number" />
+                                </div>
+                                <span asp-validation-for="StockQuantity" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ReorderLevel" class="form-label text-secondary fw-semibold small"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text border-end-0 text-warning"><i class="bi bi-bell"></i></span>
+                                    <input asp-for="ReorderLevel" class="form-control border-start-0 ps-0" type="number" />
+                                </div>
+                                <span asp-validation-for="ReorderLevel" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
 
-                    <div class="mt-4 d-flex gap-2">
-                        <button type="submit" class="btn btn-warning btn-lg px-4 fs-6 text-white d-inline-flex align-items-center gap-2" style="background-color: #f59e0b; border-color: #f59e0b;">
-                            <i class="bi bi-check-lg"></i> Save Changes
-                        </button>
-                        <a asp-action="Index" class="btn btn-secondary btn-lg px-4 fs-6 d-inline-flex align-items-center gap-2">
-                            <i class="bi bi-arrow-left"></i> Cancel
-                        </a>
-                    </div>
-                </form>
+                        <!-- Expiry Date -->
+                        <div class="mb-4">
+                            <label asp-for="ExpiryDate" class="form-label text-secondary fw-semibold small"></label>
+                            <div class="input-group">
+                                <span class="input-group-text border-end-0"><i class="bi bi-calendar-event"></i></span>
+                                <input asp-for="ExpiryDate" class="form-control border-start-0 ps-0" type="date" />
+                            </div>
+                            <span asp-validation-for="ExpiryDate" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <hr class="my-4 text-muted opacity-25" />
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn px-4 fw-semibold text-white d-inline-flex align-items-center gap-2" style="background-color: #0f766e; border-color: #0f766e;">
+                                <i class="bi bi-check-circle-fill"></i> Save Changes
+                            </button>
+                            <a asp-action="Index" class="btn btn-light px-4 border text-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

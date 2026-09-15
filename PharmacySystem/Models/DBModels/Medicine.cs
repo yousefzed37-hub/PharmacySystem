@@ -21,6 +21,15 @@ namespace PharmacySystem.Models.DBModels
          public int ReorderLevel { get; set; }
 
          public DateTime ExpiryDate { get; set; }
+        // Additional properties for detailed information
+        public string? ActiveIngredient { get; set; }
+        public string? Indications { get; set; }
+        public string? Dosage { get; set; }
+        public string? SideEffects { get; set; }
+        public string? Contraindications { get; set; }
+        public string? ShelfLocation { get; set; }
+
+        //----------------------------------------------
 
         public bool IsDeleted { get; set; } = false;
 
