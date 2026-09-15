@@ -12,8 +12,8 @@ using PharmacySystem.Models.Data;
 namespace PharmacySystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260915153123_image")]
-    partial class image
+    [Migration("20260915111817_intialcreate")]
+    partial class intialcreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -216,15 +216,27 @@ namespace PharmacySystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ActiveIngredient")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Contraindications")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("CostPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("Dosage")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Indications")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -239,6 +251,12 @@ namespace PharmacySystem.Migrations
                     b.Property<decimal>("SalePrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ShelfLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SideEffects")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
