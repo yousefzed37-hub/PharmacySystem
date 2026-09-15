@@ -20,14 +20,18 @@ namespace PharmacySystem
             builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // --- التعديل هنا: تم إضافة AddRoles <IdentityRole>() ---
+            // --- إضافة خدمة إرسال الإيميلات ---
+            builder.Services.AddTransient<Microsoft.AspNetCore.Identity.UI.Services.IEmailSender, PharmacySystem.Services.EmailSender>();
+
+            // --- إعدادات Identity مع تفعيل تأكيد الإيميل ---
             builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
-                options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedAccount = true; // <-- غيرناها هنا لـ true
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 6;
                 options.Password.RequireNonAlphanumeric = false;
+                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
             })
-            .AddRoles<IdentityRole>() // <-- السطر ده هو اللي هيشغل الـ Roles و الـ IsInRole
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>();
 
             var app = builder.Build();
