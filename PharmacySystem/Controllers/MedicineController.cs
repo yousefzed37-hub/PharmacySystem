@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PharmacyManagement.Core.Interfaces;
 using PharmacyManagement.Web.ViewModels.Medicines;
+using PharmacySystem.Core;
 using PharmacySystem.Models.DBModels;
 using System;
 using System.Linq;
@@ -20,28 +21,71 @@ namespace PharmacyManagement.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IActionResult> Index(string? searchTerm)
+        public async Task<IActionResult> Index(string? searchTerm, int? pageNumber)
         {
-             var medicines = await _unitOfWork.Medicines.FindAllAsync(m => !m.IsDeleted, new[] { "Category" });
-              if (!string.IsNullOrWhiteSpace(searchTerm))
+            int pageSize = 12;
+            int pageIndex = pageNumber ?? 1;
+
+            var medicines = await _unitOfWork.Medicines.FindAllAsync(m => !m.IsDeleted, new[] { "Category" });
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 var cleanTerm = searchTerm.Trim();
                 medicines = medicines.Where(m => m.Name.Contains(cleanTerm, StringComparison.OrdinalIgnoreCase));
             }
-               var viewModels = medicines.Select(m => new MedicineIndexViewModel
+
+            var viewModels = medicines.Select(m => new MedicineIndexViewModel
             {
                 Id = m.Id,
                 Name = m.Name,
                 SellingPrice = m.SalePrice,
                 StockQuantity = m.StockQuantity,
+                ReorderLevel = m.ReorderLevel, // <-- تم التمرير هنا لضمان عمل IsLowStock و IsOutOfStock
                 ExpiryDate = m.ExpiryDate,
-                CategoryName = m.Category?.Name ?? "Uncategorized",
-                IsLowStock = m.StockQuantity <= m.ReorderLevel
+                CategoryName = m.Category?.Name ?? "Uncategorized"
             }).ToList();
 
-            return View(viewModels);
+            var count = viewModels.Count();
+            var items = viewModels.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+
+            var paginatedModel = new PaginatedList<MedicineIndexViewModel>(items, count, pageIndex, pageSize);
+
+            return View(paginatedModel);
         }
-         public async Task<IActionResult> Create()
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var medicine = (await _unitOfWork.Medicines.FindAllAsync(m => m.Id == id && !m.IsDeleted, new[] { "Category" })).FirstOrDefault();
+
+            if (medicine == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new MedicineIndexViewModel
+            {
+                Id = medicine.Id,
+                Name = medicine.Name,
+                SellingPrice = medicine.SalePrice,
+                StockQuantity = medicine.StockQuantity,
+                ReorderLevel = medicine.ReorderLevel, // <-- تم التمرير هنا أيضاً
+                ExpiryDate = medicine.ExpiryDate,
+                CategoryName = medicine.Category?.Name ?? "Uncategorized",
+
+
+                // Additional properties for detailed information
+                ActiveIngredient = medicine.ActiveIngredient,
+                Indications = medicine.Indications,
+                Dosage = medicine.Dosage,
+                SideEffects = medicine.SideEffects,
+                Contraindications = medicine.Contraindications,
+                ShelfLocation = medicine.ShelfLocation
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> Create()
         {
             var categories = await _unitOfWork.Categories.GetAllAsync();
 
@@ -76,7 +120,15 @@ namespace PharmacyManagement.Web.Controllers
                 CategoryId = viewModel.CategoryId,
                 StockQuantity = viewModel.StockQuantity,
                 ReorderLevel = viewModel.ReorderLevel,
-                ExpiryDate = viewModel.ExpiryDate ?? DateTime.MaxValue
+                ExpiryDate = viewModel.ExpiryDate ?? DateTime.MaxValue,
+
+                // Additional properties for detailed information
+                ActiveIngredient = viewModel.ActiveIngredient,
+                Indications = viewModel.Indications,
+                Dosage = viewModel.Dosage,
+                SideEffects = viewModel.SideEffects,
+                Contraindications = viewModel.Contraindications,
+                ShelfLocation = viewModel.ShelfLocation
             };
 
             await _unitOfWork.Medicines.AddAsync(newMedicine);
@@ -89,7 +141,7 @@ namespace PharmacyManagement.Web.Controllers
         {
             var medicine = await _unitOfWork.Medicines.GetByIdAsync(id);
 
-            if (medicine == null) return NotFound();
+            if (medicine == null || medicine.IsDeleted) return NotFound();
 
             var categories = await _unitOfWork.Categories.GetAllAsync();
 
@@ -123,7 +175,7 @@ namespace PharmacyManagement.Web.Controllers
             }
 
             var medicine = await _unitOfWork.Medicines.GetByIdAsync(id);
-            if (medicine == null) return NotFound();
+            if (medicine == null || medicine.IsDeleted) return NotFound();
 
             medicine.Name = viewModel.Name;
             medicine.SalePrice = viewModel.SellingPrice;
@@ -141,7 +193,7 @@ namespace PharmacyManagement.Web.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var medicine = (await _unitOfWork.Medicines.FindAllAsync(m => m.Id == id, new[] { "Category" })).FirstOrDefault();
+            var medicine = (await _unitOfWork.Medicines.FindAllAsync(m => m.Id == id && !m.IsDeleted, new[] { "Category" })).FirstOrDefault();
 
             if (medicine == null) return NotFound();
 
@@ -150,6 +202,7 @@ namespace PharmacyManagement.Web.Controllers
                 Id = medicine.Id,
                 Name = medicine.Name,
                 SellingPrice = medicine.SalePrice,
+                StockQuantity = medicine.StockQuantity,
                 CategoryName = medicine.Category?.Name ?? "Uncategorized"
             };
 
@@ -161,7 +214,7 @@ namespace PharmacyManagement.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var medicine = await _unitOfWork.Medicines.GetByIdAsync(id);
-            if (medicine == null) return NotFound();
+            if (medicine == null || medicine.IsDeleted) return NotFound();
 
             medicine.IsDeleted = true;
             _unitOfWork.Medicines.Update(medicine);
@@ -169,8 +222,6 @@ namespace PharmacyManagement.Web.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> QuickCreate([FromBody] MedicineQuickCreateDto dto)
@@ -182,7 +233,6 @@ namespace PharmacyManagement.Web.Controllers
                     return Json(new { success = false, message = "Invalid medicine data or missing category." });
                 }
 
-                // فحص بدون ToLower عشان نتفادى مشاكل ترجمة SQL
                 var cleanName = dto.Name.Trim();
                 var existing = await _unitOfWork.Medicines.FindAsync(m => m.Name == cleanName && !m.IsDeleted);
                 if (existing != null)

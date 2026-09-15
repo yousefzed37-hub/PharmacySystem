@@ -24,6 +24,29 @@ namespace PharmacyManagement.Web.ViewModels.Medicines
         
         public IEnumerable<SelectListItem>? Categories { get; set; }
 
+
+        // Additional properties for detailed information
+
+        [Display(Name = "Active Ingredient")]
+        public string? ActiveIngredient { get; set; }
+
+        [Display(Name = "Indications / Uses")]
+        public string? Indications { get; set; }
+
+        [Display(Name = "Dosage & Usage")]
+        public string? Dosage { get; set; }
+
+        [Display(Name = "Side Effects")]
+        public string? SideEffects { get; set; }
+
+        [Display(Name = "Contraindications")]
+        public string? Contraindications { get; set; }
+
+        [Display(Name = "Shelf Location")]
+        public string? ShelfLocation { get; set; }
+
+        //----------------------------------------------
+
         [Required(ErrorMessage = "Selling price is required.")]
         [Range(0.01, 100000.0, ErrorMessage = "Selling price must be greater than zero.")]
         [Display(Name = "Selling Price ($)")]
@@ -64,13 +87,33 @@ namespace PharmacyManagement.Web.ViewModels.Medicines
         public decimal SellingPrice { get; set; }
 
         [Display(Name = "Stock")]
-        public int StockQuantity { get; set; }
-
+        public int StockQuantity { get; set; } 
+        //------------------------------------------
         [Display(Name = "Expiry Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? ExpiryDate { get; set; }
 
-        public bool IsLowStock { get; set; }
+        [Display(Name = "Active Ingredient")]
+        public string? ActiveIngredient { get; set; }
+
+        [Display(Name = "Indications / Uses")]
+        public string? Indications { get; set; }
+
+        [Display(Name = "Dosage & Usage")]
+        public string? Dosage { get; set; }
+
+        [Display(Name = "Side Effects")]
+        public string? SideEffects { get; set; }
+
+        [Display(Name = "Contraindications")]
+        public string? Contraindications { get; set; }
+
+        [Display(Name = "Shelf Location")]
+        public string? ShelfLocation { get; set; }
+        //------------------------------------------
+        public int ReorderLevel { get; set; }
+        public bool IsOutOfStock => StockQuantity <= 0;
+        public bool IsLowStock => StockQuantity > 0 && StockQuantity <= ReorderLevel;
         public bool IsExpired => ExpiryDate.HasValue && ExpiryDate.Value <= DateTime.UtcNow;
     }
 

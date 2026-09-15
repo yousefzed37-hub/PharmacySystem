@@ -27,6 +27,14 @@
                         <input asp-for="Name" class="form-control form-control-lg border-light-subtle shadow-sm" placeholder="Enter category name..." />
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
+                    <!-- Description Field -->
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label text-secondary fw-semibold">
+                            <i class="bi bi-card-text me-1"></i> Description
+                        </label>
+                        <textarea asp-for="Description" class="form-control border-light-subtle shadow-sm" rows="4" placeholder="Enter category description (optional)..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                    </div>
 
                     <div class="mt-4 d-flex gap-2">
                         <button type="submit" class="btn btn-warning btn-lg px-4 fs-6 text-white d-inline-flex align-items-center gap-2" style="background-color: #f59e0b; border-color: #f59e0b;">
