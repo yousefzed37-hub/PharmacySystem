@@ -1,77 +1,101 @@
-﻿@model PharmacyManagement.Web.ViewModels.Categories.CategoryIndexViewModel
+﻿@model PharmacyManagement.Web.ViewModels.Categories.CategoryFormViewModel
 
 @{
-    ViewData["Title"] = "Category Details";
+    ViewData["Title"] = "Add New Category";
 }
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #0f766e !important;
+        box-shadow: 0 0 0 0.25rem rgba(15, 118, 110, 0.15) !important;
+    }
+
+    .input-group-text {
+        background-color: #f8fafc;
+        color: #64748b;
+    }
+</style>
 
 <div class="container-fluid pt-3">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold d-flex align-items-center gap-2 mb-1" style="color: #1e293b;">
-                <i class="bi bi-folder-fill" style="color: #0f766e;"></i> @Model.Name
+                <i class="bi bi-folder-plus" style="color: #0f766e;"></i> Add New Category
             </h2>
-            <p class="text-muted small mb-0">Overview of category specifications and registered products count.</p>
+            <p class="text-muted small mb-0">Create a new category to organize medicine catalog.</p>
         </div>
         <a asp-action="Index" class="btn btn-outline-secondary px-3 d-inline-flex align-items-center gap-2">
-            <i class="bi bi-arrow-left"></i> Back to Catalog
+            <i class="bi bi-arrow-left"></i> Back to Categories
         </a>
     </div>
 
-    <!-- Main Card (Full Width) -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+    <!-- Main Content Layout -->
+    <div class="row g-4">
+        <!-- Form Section -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-3 p-4">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4" role="alert"></div>
 
-                <!-- Card Header -->
-                <div class="card-header bg-light border-0 py-3 fw-bold text-secondary">
-                    <i class="bi bi-info-circle me-1" style="color: #0f766e;"></i> Category Information
-                </div>
-
-                <!-- Card Body -->
-                <div class="card-body p-4">
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <span class="text-muted d-block small mb-1 fw-semibold text-uppercase">Category Name</span>
-                            <span class="fs-5 fw-bold text-dark">@Model.Name</span>
-                        </div>
-
-                        <div class="col-md-6">
-                            <span class="text-muted d-block small mb-1 fw-semibold text-uppercase">Total Medicines</span>
-                            <span class="badge rounded-pill px-3 py-2 text-white fs-6 d-inline-flex align-items-center gap-1" style="background-color: #0f766e;">
-                                <i class="bi bi-capsule"></i> @Model.MedicinesCount Products
+                    <!-- Category Name -->
+                    <div class="mb-4">
+                        <label asp-for="Name" class="form-label text-secondary fw-semibold small"></label>
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0">
+                                <i class="bi bi-tag" style="color: #0f766e;"></i>
                             </span>
+                            <input asp-for="Name" class="form-control border-start-0 ps-0" placeholder="e.g. Painkillers, Antibiotics, Vitamins" autocomplete="off" />
                         </div>
-
-                        <div class="col-12">
-                            <hr class="my-1 text-muted opacity-25" />
-                        </div>
-
-                        <div class="col-12">
-                            <span class="text-muted d-block small mb-1 fw-semibold text-uppercase">Description</span>
-                            <div class="p-3 bg-light rounded-3 border text-secondary">
-                                @(string.IsNullOrWhiteSpace(Model.Description) ? "No description provided for this category." : Model.Description)
-                            </div>
-                        </div>
+                        <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
                     </div>
-                </div>
 
-                <!-- Card Footer (Back + Add Medicine) -->
-                <div class="card-footer bg-light border-0 p-3 d-flex justify-content-between align-items-center">
-                    <a asp-action="Index" class="btn btn-secondary px-4 fw-semibold d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-arrow-left"></i> Back to Categories
-                    </a>
+                    <!-- Category Description -->
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label text-secondary fw-semibold small"></label>
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0 align-items-start pt-2">
+                                <i class="bi bi-card-text" style="color: #0f766e;"></i>
+                            </span>
+                            <textarea asp-for="Description" class="form-control border-start-0 ps-0" rows="4" placeholder="Briefly describe what kind of medicines belong to this category..."></textarea>
+                        </div>
+                        <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                    </div>
 
-                    <a asp-controller="Medicine"
-                       asp-action="Create"
-                       asp-route-categoryId="@Model.Id"
-                       class="btn text-white px-4 fw-semibold d-inline-flex align-items-center gap-2"
-                       style="background-color: #0f766e; border-color: #0f766e;">
-                        <i class="bi bi-plus-circle-fill"></i> Add Medicine to this Category
-                    </a>
-                </div>
+                    <hr class="my-4 text-muted opacity-25" />
 
+                    <!-- Actions -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn text-white px-4 fw-semibold d-inline-flex align-items-center gap-2" style="background-color: #0f766e; border-color: #0f766e;">
+                            <i class="bi bi-check-circle-fill"></i> Save Category
+                        </button>
+                        <a asp-action="Index" class="btn btn-light border px-4 text-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar Helper Guide -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-3 bg-light p-4">
+                <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-lightbulb-fill text-warning"></i> Guidelines
+                </h5>
+                <ul class="text-secondary small ps-3 mb-0 d-flex flex-column gap-2">
+                    <li>Choose a clear, standardized name for the category to keep the catalog clean.</li>
+                    <li>The description is optional, but helpful for pharmacists when assigning medicines.</li>
+                    <li>Once created, you can directly add medicines to this category from its details page.</li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
