@@ -8,10 +8,9 @@ namespace PharmacySystem.Models.DBModels
     public class Medicine : ISoftDelete
     {
          public int Id { get; set; }
-
-
-         public string Name { get; set; } = string.Empty;
-         public decimal CostPrice { get; set; }
+        public string? Name { get; set; }
+        public string? ImageUrl { get; set; }
+        public decimal CostPrice { get; set; }
 
          public decimal SalePrice { get; set; }
 
@@ -19,17 +18,9 @@ namespace PharmacySystem.Models.DBModels
 
          public int ReorderLevel { get; set; }
 
-         public DateTime ExpiryDate { get; set; }
-        // Additional properties for detailed information
-        public string? ActiveIngredient { get; set; }
-        public string? Indications { get; set; }
-        public string? Dosage { get; set; }
-        public string? SideEffects { get; set; }
-        public string? Contraindications { get; set; }
-        public string? ShelfLocation { get; set; }
-
-        //----------------------------------------------
-
+        public DateTime ExpiryDate { get; set; }
+       
+        
         public bool IsDeleted { get; set; } = false;
 
          public int CategoryId { get; set; }

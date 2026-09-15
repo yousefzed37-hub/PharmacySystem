@@ -37,7 +37,25 @@ namespace PharmacyManagement.Web.Controllers
 
             return View(viewModels);
         }
-       
+       public async Task<IActionResult> Details(int id)
+{
+    var category = (await _unitOfWork.Categories.FindAllAsync(c => c.Id == id && !c.IsDeleted, new[] { "Medicines" })).FirstOrDefault();
+
+    if (category == null)
+    {
+        return NotFound();
+    }
+
+    var viewModel = new CategoryIndexViewModel
+    {
+        Id = category.Id,
+        Name = category.Name,
+        Description = category.Description,
+        MedicinesCount = category.Medicines?.Count(m => !m.IsDeleted) ?? 0
+    };
+
+    return View(viewModel);
+}
         public IActionResult Create()
         {
             var viewModel = new CategoryFormViewModel();

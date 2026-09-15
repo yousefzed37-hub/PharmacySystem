@@ -45,7 +45,7 @@ namespace PharmacySystem
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseRouting();
 

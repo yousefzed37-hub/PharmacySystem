@@ -11,11 +11,7 @@ namespace PharmacyManagement.Web.ViewModels.Medicines
         [StringLength(150, MinimumLength = 2, ErrorMessage = "Trade name must be between 2 and 150 characters.")]
         [Display(Name = "Medicine Name")]
         public string Name { get; set; } = string.Empty;
-
-        //[Required(ErrorMessage = "Barcode is required.")]
-        //[StringLength(50, MinimumLength = 3, ErrorMessage = "Barcode must be between 3 and 50 characters.")]
-        ////[Display(Name = "Barcode")]
-        //public string Barcode { get; set; } = string.Empty;
+ 
 
         [Required(ErrorMessage = "Please select a category.")]
         [Display(Name = "Category")]
@@ -24,28 +20,7 @@ namespace PharmacyManagement.Web.ViewModels.Medicines
         
         public IEnumerable<SelectListItem>? Categories { get; set; }
 
-
-        // Additional properties for detailed information
-
-        [Display(Name = "Active Ingredient")]
-        public string? ActiveIngredient { get; set; }
-
-        [Display(Name = "Indications / Uses")]
-        public string? Indications { get; set; }
-
-        [Display(Name = "Dosage & Usage")]
-        public string? Dosage { get; set; }
-
-        [Display(Name = "Side Effects")]
-        public string? SideEffects { get; set; }
-
-        [Display(Name = "Contraindications")]
-        public string? Contraindications { get; set; }
-
-        [Display(Name = "Shelf Location")]
-        public string? ShelfLocation { get; set; }
-
-        //----------------------------------------------
+ 
 
         [Required(ErrorMessage = "Selling price is required.")]
         [Range(0.01, 100000.0, ErrorMessage = "Selling price must be greater than zero.")]
@@ -68,14 +43,13 @@ namespace PharmacyManagement.Web.ViewModels.Medicines
         [DataType(DataType.Date)]
         [Display(Name = "Expiration Date")]
         public DateTime? ExpiryDate { get; set; }
+        public string? ExistingImageUrl { get; set; }
+        public IFormFile? ImageFile { get; set; }
     }
 
     public class MedicineIndexViewModel
     {
         public int Id { get; set; }
-
-        //[Display(Name = "Barcode")]
-        //public string Barcode { get; set; } = string.Empty;
 
         [Display(Name = "Medicine Name")]
         public string Name { get; set; } = string.Empty;
@@ -83,34 +57,19 @@ namespace PharmacyManagement.Web.ViewModels.Medicines
         [Display(Name = "Category")]
         public string CategoryName { get; set; } = string.Empty;
 
+        [Display(Name = "Image")]
+        public string ImageUrl { get; set; } = string.Empty;
+        public string? ExistingImageUrl { get; set; }
+
         [Display(Name = "Selling Price")]
         public decimal SellingPrice { get; set; }
 
         [Display(Name = "Stock")]
         public int StockQuantity { get; set; } 
-        //------------------------------------------
+     
         [Display(Name = "Expiry Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? ExpiryDate { get; set; }
-
-        [Display(Name = "Active Ingredient")]
-        public string? ActiveIngredient { get; set; }
-
-        [Display(Name = "Indications / Uses")]
-        public string? Indications { get; set; }
-
-        [Display(Name = "Dosage & Usage")]
-        public string? Dosage { get; set; }
-
-        [Display(Name = "Side Effects")]
-        public string? SideEffects { get; set; }
-
-        [Display(Name = "Contraindications")]
-        public string? Contraindications { get; set; }
-
-        [Display(Name = "Shelf Location")]
-        public string? ShelfLocation { get; set; }
-        //------------------------------------------
         public int ReorderLevel { get; set; }
         public bool IsOutOfStock => StockQuantity <= 0;
         public bool IsLowStock => StockQuantity > 0 && StockQuantity <= ReorderLevel;

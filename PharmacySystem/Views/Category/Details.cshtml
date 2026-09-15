@@ -13,33 +13,30 @@
             </h2>
             <p class="text-muted small mb-0">Overview of category specifications and registered products count.</p>
         </div>
-        <a asp-action="Index" class="btn btn-outline-secondary px-3 d-inline-flex align-items-center gap-2">
+        @* <a asp-action="Index" class="btn btn-outline-secondary px-4 fw-semibold d-inline-flex align-items-center gap-2">
             <i class="bi bi-arrow-left"></i> Back to Catalog
-        </a>
+        </a> *@
     </div>
 
-    <!-- Main Card (Full Width) -->
+    <!-- Main Card -->
     <div class="row">
-        <div class="col-12">
+        <div class="col-lg-8">
             <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
-
-                <!-- Card Header -->
                 <div class="card-header bg-light border-0 py-3 fw-bold text-secondary">
                     <i class="bi bi-info-circle me-1" style="color: #0f766e;"></i> Category Information
                 </div>
 
-                <!-- Card Body -->
                 <div class="card-body p-4">
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <span class="text-muted d-block small mb-1 fw-semibold text-uppercase">Category Name</span>
+                    <div class="row g-4 mb-3">
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block small mb-1 fw-semibold">CATEGORY NAME</span>
                             <span class="fs-5 fw-bold text-dark">@Model.Name</span>
                         </div>
 
-                        <div class="col-md-6">
-                            <span class="text-muted d-block small mb-1 fw-semibold text-uppercase">Total Medicines</span>
-                            <span class="badge rounded-pill px-3 py-2 text-white fs-6 d-inline-flex align-items-center gap-1" style="background-color: #0f766e;">
-                                <i class="bi bi-capsule"></i> @Model.MedicinesCount Products
+                        <div class="col-sm-6">
+                            <span class="text-muted d-block small mb-1 fw-semibold">TOTAL MEDICINES</span>
+                            <span class="badge rounded-pill px-3 py-2 text-white fs-6" style="background-color: #0f766e;">
+                                <i class="bi bi-capsule me-1"></i>@Model.MedicinesCount Products
                             </span>
                         </div>
 
@@ -48,29 +45,20 @@
                         </div>
 
                         <div class="col-12">
-                            <span class="text-muted d-block small mb-1 fw-semibold text-uppercase">Description</span>
-                            <div class="p-3 bg-light rounded-3 border text-secondary">
+                            <span class="text-muted d-block small mb-1 fw-semibold">DESCRIPTION</span>
+                            <p class="text-secondary bg-light p-3 rounded-2 border mb-0">
                                 @(string.IsNullOrWhiteSpace(Model.Description) ? "No description provided for this category." : Model.Description)
-                            </div>
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card Footer (Back + Add Medicine) -->
-                <div class="card-footer bg-light border-0 p-3 d-flex justify-content-between align-items-center">
+                <!-- Card Footer (Back Only) -->
+                <div class="card-footer bg-light border-0 p-3">
                     <a asp-action="Index" class="btn btn-secondary px-4 fw-semibold d-inline-flex align-items-center gap-2">
                         <i class="bi bi-arrow-left"></i> Back to Categories
                     </a>
-
-                    <a asp-controller="Medicine"
-                       asp-action="Create"
-                       asp-route-categoryId="@Model.Id"
-                       class="btn text-white px-4 fw-semibold d-inline-flex align-items-center gap-2"
-                       style="background-color: #0f766e; border-color: #0f766e;">
-                        <i class="bi bi-plus-circle-fill"></i> Add Medicine to this Category
-                    </a>
                 </div>
-
             </div>
         </div>
     </div>

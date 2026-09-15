@@ -4,12 +4,25 @@
     ViewData["Title"] = "Categories List";
 }
 
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(15, 118, 110, 0.04) !important;
+    }
+
+    .hover-teal:hover {
+        color: #0f766e !important;
+    }
+</style>
+
 <div class="container-fluid pt-3">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-secondary d-flex align-items-center gap-2">
-            <i class="bi bi-tags text-teal" style="color: #0f766e;"></i> Categories Catalog
-        </h2>
+        <div>
+            <h2 class="fw-bold text-secondary d-flex align-items-center gap-2 mb-1">
+                <i class="bi bi-tags text-teal" style="color: #0f766e;"></i> Categories List
+            </h2>
+            <p class="text-muted small mb-0">Manage product categories and catalog structure.</p>
+        </div>
         <a asp-controller="Category" asp-action="Create" class="btn btn-success px-4 fw-semibold d-inline-flex align-items-center gap-2" style="background-color: #0f766e; border-color: #0f766e;">
             <i class="bi bi-plus-circle-fill"></i> Add New Category
         </a>
@@ -40,70 +53,82 @@
         </div>
     </div>
 
-    <!-- Cards Grid Container -->
-    <div class="row g-3" id="categoriesGrid">
-        @if (Model != null && Model.Any())
-        {
-            @foreach (var category in Model)
-            {
-                <div class="col-12 col-md-6 col-lg-4 col-xl-3 category-card-item">
-                    <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+    <!-- Data Table Container -->
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="categoriesTable">
+                <thead class="bg-light border-bottom">
+                    <tr>
+                        <th class="py-3 ps-4 text-secondary small fw-bold text-uppercase">Category Name</th>
+                        <th class="py-3 text-secondary small fw-bold text-uppercase">Description</th>
+                        <th class="py-3 text-secondary small fw-bold text-uppercase text-center">Products Count</th>
+                        <th class="py-3 pe-4 text-secondary small fw-bold text-uppercase text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var category in Model)
+                        {
+                            <tr class="category-row-item">
+                                <!-- Category Name -->
+                                <td class="ps-4">
+                                    <h6 class="fw-bold mb-0 category-name">
+                                        <a asp-action="Details" asp-route-id="@category.Id" class="text-decoration-none text-dark hover-teal">
+                                            <i class="bi bi-tag-fill me-2" style="color: #0f766e;"></i>@category.Name
+                                        </a>
+                                    </h6>
+                                </td>
 
-                        <!-- Card Header -->
-                        <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center pt-3 px-3">
-                            <span class="badge bg-secondary bg-opacity-10 text-secondary border fw-normal px-2 py-1">
-                                <i class="bi bi-folder me-1"></i>Category
-                            </span>
-                            <span class="badge rounded-pill px-2 py-1 text-white" style="background-color: #0f766e;">
-                                <i class="bi bi-capsule me-1"></i>@category.MedicinesCount Products
-                            </span>
-                        </div>
+                                <!-- Description -->
+                                <td>
+                                    <span class="text-secondary small">
+                                        @(string.IsNullOrWhiteSpace(category.Description) ? "No description provided." : category.Description)
+                                    </span>
+                                </td>
 
-                        <!-- Card Body -->
-                        <div class="card-body px-3 py-2">
-                            <h5 class="fw-bold text-dark mb-2 category-name">
-                                <i class="bi bi-tag-fill me-1" style="color: #0f766e;"></i> @category.Name
-                            </h5>
+                                <!-- Products Count Badge -->
+                                <td class="text-center">
+                                    <span class="badge rounded-pill px-3 py-2 text-white" style="background-color: #0f766e;">
+                                        <i class="bi bi-capsule me-1"></i>@category.MedicinesCount Products
+                                    </span>
+                                </td>
 
-                            <div class="my-3">
-                                <small class="text-muted d-block mb-1">Description:</small>
-                                <p class="text-secondary small mb-0 text-truncate-2" style="min-height: 38px;">
-                                    @(string.IsNullOrWhiteSpace(category.Description) ? "No description provided." : category.Description)
-                                </p>
-                            </div>
-                        </div>
+                                <!-- Actions Buttons -->
+                                <td class="pe-4 text-end">
+                                    <div class="d-inline-flex gap-1">
+                                        <a asp-action="Details" asp-route-id="@category.Id" class="btn btn-sm btn-outline-secondary" title="Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-outline-warning" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                <h5>No categories available.</h5>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-                        <!-- Card Footer / Actions -->
-                        <div class="card-footer bg-white border-0 d-flex gap-2 p-3 pt-0">
-                            <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-sm btn-outline-warning w-50 d-inline-flex align-items-center justify-content-center gap-1">
-                                <i class="bi bi-pencil-square"></i> Edit
-                            </a>
-                            <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-sm btn-outline-danger w-50 d-inline-flex align-items-center justify-content-center gap-1">
-                                <i class="bi bi-trash"></i> Delete
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-            }
-
-            <!-- No Search Results -->
-            <div class="col-12" id="noResultsCard" style="display: none;">
-                <div class="card border-0 shadow-sm rounded-3 text-center py-5 text-muted">
-                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                    <h5>No categories found matching your search.</h5>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="col-12">
-                <div class="card border-0 shadow-sm rounded-3 text-center py-5 text-muted">
-                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                    <h5>No categories available.</h5>
-                </div>
-            </div>
-        }
+        <!-- No Search Results Container -->
+        <div id="noResultsCard" class="text-center py-5 text-muted border-top" style="display: none;">
+            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+            <h5>No categories found matching your search.</h5>
+        </div>
     </div>
 </div>
 
@@ -112,33 +137,33 @@
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
             const clearSearchBtn = document.getElementById('clearSearchBtn');
-            const cards = document.querySelectorAll('.category-card-item');
+            const rows = document.querySelectorAll('.category-row-item');
             const noResultsCard = document.getElementById('noResultsCard');
 
-            function filterCards() {
+            function filterRows() {
                 const term = searchInput.value.toLowerCase().trim();
                 let visibleCount = 0;
 
-                cards.forEach(card => {
-                    const nameText = card.querySelector('.category-name').textContent.toLowerCase();
+                rows.forEach(row => {
+                    const nameText = row.querySelector('.category-name').textContent.toLowerCase();
                     if (nameText.includes(term)) {
-                        card.style.display = '';
+                        row.style.display = '';
                         visibleCount++;
                     } else {
-                        card.style.display = 'none';
+                        row.style.display = 'none';
                     }
                 });
 
                 if (noResultsCard) {
-                    noResultsCard.style.display = (visibleCount === 0 && cards.length > 0) ? '' : 'none';
+                    noResultsCard.style.display = (visibleCount === 0 && rows.length > 0) ? '' : 'none';
                 }
             }
 
-            searchInput.addEventListener('input', filterCards);
+            searchInput.addEventListener('input', filterRows);
 
             clearSearchBtn.addEventListener('click', function() {
                 searchInput.value = '';
-                filterCards();
+                filterRows();
                 searchInput.focus();
             });
         });
