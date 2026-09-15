@@ -42,7 +42,7 @@ namespace PharmacySystem.Controllers
                 TotalSuppliers = await _unitOfWork.Suppliers.CountAsync(),
                 TotalInvoices = await _unitOfWork.Sales.CountAsync(),
                 ExpiringSoonCount = await _unitOfWork.Medicines.CountAsync(),
-                ExpiringMedicines = expiringMedicines.OrderBy(m => m.ExpiryDate).Take(5),
+                ExpiringMedicines = expiringMedicines,
                 LowStockCount = lowStockMedicines.Count(),
                 LowStockMedicines = lowStockMedicines
             };
