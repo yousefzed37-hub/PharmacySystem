@@ -33,7 +33,7 @@ namespace PharmacySystem.Controllers
                 SupplierName = suppliers.ContainsKey(o.SupplierId) ? suppliers[o.SupplierId] : "N/A",
                 OrderDate = o.OrderDate,
                 TotalCost = o.TotalCost,
-                Notes = string.Empty // رأس الجدول في الـ Index
+                Notes = string.Empty 
             }).OrderByDescending(o => o.OrderDate).ToList();
 
             return View(viewModels);
@@ -71,7 +71,6 @@ namespace PharmacySystem.Controllers
         }
 
         // GET: /PurchaseOrders/Create
-        // GET: /PurchaseOrder/Create
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -82,7 +81,6 @@ namespace PharmacySystem.Controllers
                 MedicinesList = await GetMedicinesSelectListAsync()
             };
 
-            // ده السطر اللي كان ناقص ومخلي الأقسام مش باينة نهائياً:
             ViewBag.CategoriesList = (await _unitOfWork.Categories.GetAllAsync())
                 .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
                 .ToList();
@@ -115,18 +113,16 @@ namespace PharmacySystem.Controllers
             using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                // 1. إنشاء وحفظ رأس الفاتورة
                 var purchaseOrder = new PurchaseOrder
                 {
                     SupplierId = model.SupplierId,
                     OrderDate = model.OrderDate,
-                    TotalCost = model.TotalCost // محسوبة تلقائياً في الـ ViewModel
+                    TotalCost = model.TotalCost 
                 };
 
                 await _unitOfWork.PurchaseOrders.AddAsync(purchaseOrder);
-                await _unitOfWork.CompleteAsync(); // لتوليد الـ Id الخاص بأمر الشراء
+                await _unitOfWork.CompleteAsync(); 
 
-                // 2. معالجة بنود الفاتورة وتحديث المخزون وسعر التكلفة
                 var orderItems = new List<PurchaseOrderItem>();
 
                 foreach (var item in model.Items)
@@ -135,12 +131,10 @@ namespace PharmacySystem.Controllers
                     if (medicine == null)
                         throw new InvalidOperationException($"Medicine with ID {item.MedicineId} does not exist.");
 
-                    // زيادة رصيد المخزن وتحديث سعر الشراء
                     medicine.StockQuantity += item.Quantity;
                     medicine.CostPrice = item.UnitPrice;
                     _unitOfWork.Medicines.Update(medicine);
 
-                    // إضافة سطر الطلبية
                     orderItems.Add(new PurchaseOrderItem
                     {
                         PurchaseOrderId = purchaseOrder.Id,
@@ -150,11 +144,9 @@ namespace PharmacySystem.Controllers
                     });
                 }
 
-                // حفظ جميع البنود دفعة واحدة
                 await _unitOfWork.PurchaseOrderItems.AddRangeAsync(orderItems);
                 await _unitOfWork.CompleteAsync();
 
-                // تثبيت الـ Transaction
                 await transaction.CommitAsync();
 
                 TempData["Success"] = $"Purchase Order #{purchaseOrder.Id} created and stock updated successfully.";

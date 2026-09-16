@@ -12,13 +12,7 @@ namespace PharmacySystem.Controllers
     public class SupplierController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        //private readonly IFileService _fileService;
 
-        //public SuppliersController(IUnitOfWork unitOfWork, IFileService fileService)
-        //{
-        //    _unitOfWork = unitOfWork;
-        //    _fileService = fileService;
-        //}
         public SupplierController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -55,16 +49,9 @@ namespace PharmacySystem.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SupplierViewModel model)
-        //public async Task<IActionResult> Create(SupplierViewModel model, IFormFile? imageFile)
         {
             if (!ModelState.IsValid)
                 return View(model);
-
-            //string? uploadedPath = null;
-            //if (imageFile != null && imageFile.Length > 0)
-            //{
-            //    uploadedPath = await _fileService.UploadFileAsync(imageFile, "suppliers");
-            //}
 
             var supplier = new Supplier
             {
@@ -72,7 +59,6 @@ namespace PharmacySystem.Controllers
                 ContactName = model.Email ?? string.Empty,
                 Phone = model.Phone,
                 Address = model.Address ?? string.Empty,
-                //ImageUrl = uploadedPath
             };
 
             await _unitOfWork.Suppliers.AddAsync(supplier);
@@ -105,8 +91,7 @@ namespace PharmacySystem.Controllers
         // POST: /Suppliers/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(SupplierViewModel model, IFormFile? imageFile)
-        //public async Task<IActionResult> Edit(SupplierViewModel model, IFormFile? imageFile)
+        public async Task<IActionResult> Edit(SupplierViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -114,15 +99,6 @@ namespace PharmacySystem.Controllers
             var supplier = await _unitOfWork.Suppliers.GetByIdAsync(model.Id);
             if (supplier == null)
                 return NotFound();
-
-            //if (imageFile != null && imageFile.Length > 0)
-            //{
-            //    if (!string.IsNullOrEmpty(supplier.ImageUrl))
-            //    {
-            //        _fileService.DeleteFile(supplier.ImageUrl);
-            //    }
-            //    supplier.ImageUrl = await _fileService.UploadFileAsync(imageFile, "suppliers");
-            //}
 
             supplier.CompanyName = model.Name;
             supplier.ContactName = model.Email ?? string.Empty;
@@ -136,32 +112,28 @@ namespace PharmacySystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // POST: /Suppliers/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = AppConstants.Roles.Admin)]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var supplier = await _unitOfWork.Suppliers.GetByIdAsync(id);
-            if (supplier == null)
-                return Json(new { success = false, message = "Supplier not found." });
+        //// POST: /Suppliers/Delete/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[Authorize(Roles = AppConstants.Roles.Admin)]
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var supplier = await _unitOfWork.Suppliers.GetByIdAsync(id);
+        //    if (supplier == null)
+        //        return Json(new { success = false, message = "Supplier not found." });
 
-            var relatedOrders = await _unitOfWork.PurchaseOrders.FindAllAsync(po => po.SupplierId == id);
-            if (relatedOrders.Any())
-            {
-                return Json(new { success = false, message = "Cannot delete supplier with existing purchase orders." });
-            }
+        //    var relatedOrders = await _unitOfWork.PurchaseOrders.FindAllAsync(po => po.SupplierId == id);
+        //    if (relatedOrders.Any())
+        //    {
+        //        return Json(new { success = false, message = "Cannot delete supplier with existing purchase orders." });
+        //    }
 
-            //if (!string.IsNullOrEmpty(supplier.ImageUrl))
-            //{
-            //    _fileService.DeleteFile(supplier.ImageUrl);
-            //}
 
-            _unitOfWork.Suppliers.Delete(supplier);
-            await _unitOfWork.CompleteAsync();
+        //    _unitOfWork.Suppliers.Delete(supplier);
+        //    await _unitOfWork.CompleteAsync();
 
-            return Json(new { success = true, message = "Supplier deleted successfully." });
-        }
+        //    return Json(new { success = true, message = "Supplier deleted successfully." });
+        //}
 
     }
 }
