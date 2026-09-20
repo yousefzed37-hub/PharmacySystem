@@ -86,3 +86,26 @@
         setActiveLink();
     });
 })();
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // تحديد جميع خانات الأرقام والأسعار
+    const numberInputs = document.querySelectorAll('input[type="number"]');
+
+    numberInputs.forEach(input => {
+        // أول ما تضغط جوه الخانة
+        input.addEventListener('focus', function () {
+            if (this.value === '0' || this.value === '0.00' || this.value === '0.0') {
+                this.value = '';
+            }
+        });
+
+        // لو خرجت منها وهي فاضية (ترجع 0 لو تحب أو تسيبها فاضية)
+        input.addEventListener('blur', function () {
+            if (this.value.trim() === '') {
+                // تقدر تسيبها فاضية عشان ما تضايقش المستخدم
+            }
+        });
+    });
+});
