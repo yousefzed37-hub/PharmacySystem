@@ -129,22 +129,15 @@ namespace PharmacyManagement.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var medicine = await _unitOfWork.Medicines.GetByIdAsync(id);
-
             if (medicine == null || medicine.IsDeleted) return NotFound();
 
             var categories = await _unitOfWork.Categories.GetAllAsync();
 
-            var viewModel = GetViewModel(medicine, categories);
-
-            return View(viewModel);
-        }
-
-        private static MedicineFormViewModel GetViewModel(Medicine medicine, IEnumerable<PharmacySystem.Models.Category> categories)
-        {
-            return new MedicineFormViewModel
+            var viewModel = new MedicineFormViewModel
             {
                 Id = medicine.Id,
                 Name = medicine.Name,
@@ -154,11 +147,13 @@ namespace PharmacyManagement.Web.Controllers
                 StockQuantity = medicine.StockQuantity,
                 ReorderLevel = medicine.ReorderLevel,
                 ExpiryDate = medicine.ExpiryDate,
-                ExistingImageUrl = medicine.ImageUrl,
+                ExistingImageUrl = medicine.ImageUrl, 
                 Categories = categories.Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
             };
-        }
 
+            return View(viewModel);
+        }
+         
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, MedicineFormViewModel viewModel)
@@ -188,6 +183,11 @@ namespace PharmacyManagement.Web.Controllers
             medicine.StockQuantity = viewModel.StockQuantity;
             medicine.ReorderLevel = viewModel.ReorderLevel;
             medicine.ExpiryDate = viewModel.ExpiryDate ?? medicine.ExpiryDate;
+            
+            if (viewModel.ImageFile != null)
+            {
+                medicine.ImageUrl = await UploadImageAsync(viewModel.ImageFile);
+            }
 
             _unitOfWork.Medicines.Update(medicine);
             await _unitOfWork.CompleteAsync();
