@@ -52,7 +52,6 @@ namespace PharmacySystem.Services
             }
             catch (Exception ex)
             {
-                // تسجيل الخطأ حتى لا يتوقف الأبلكيشن بـ Error 500
                 _logger.LogError(ex, "Failed to send email to {Email}", email);
             }
         }

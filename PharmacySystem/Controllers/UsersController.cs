@@ -3,18 +3,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PharmacySystem.ViewModels;
-using PharmacySystem.Models.Data; // أو النيمسبايس الخاص بكلاس ApplicationUser عندك
+using PharmacySystem.Models.Data; 
 
 namespace PharmacySystem.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
-        // 1. تغيير النوع هنا إلى ApplicationUser
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        // 2. تغيير النوع في الـ Constructor
         public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;

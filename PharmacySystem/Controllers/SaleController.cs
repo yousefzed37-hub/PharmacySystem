@@ -20,20 +20,17 @@ namespace PharmacySystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string? searchTerm)
         {
-            // جلب كل الفواتير مع تضمين البنود والأدوية المرتبطة (Eager Loading)
             var sales = await _unitOfWork.Sales.FindAllAsync(
                 criteria: s => true,
                 includes: new[] { "SaleItems", "SaleItems.Medicine" }
             );
 
-            // تطبيق البحث وإعادة التعيين لنفس المتغير الأصلي
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 var cleanSearch = searchTerm.Trim();
                 sales = sales.Where(s => s.InvoiceNumber.Contains(cleanSearch, StringComparison.OrdinalIgnoreCase));
             }
 
-            // تحويل القائمة المتفلترة إلى ViewModels للعرض في الـ View
             var salesListViewModel = sales.Select(sale => new SaleDetailsViewModel
             {
                 Id = sale.Id,
@@ -59,13 +56,11 @@ namespace PharmacySystem.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            // جلب قائمة الأدوية المتاحة لملء الـ Dropdown في الـ View
             var medicines = await _unitOfWork.Medicines.FindAllAsync(m => m.StockQuantity > 0);
             ViewBag.Medicines = new SelectList(medicines, "Id", "Name");
 
             var model = new SaleViewModel
             {
-                // إضافة بند افتراضي أولاني في الشاشة
                 Items = new List<SaleItemViewModel> { new SaleItemViewModel() }
             };
 
@@ -95,7 +90,6 @@ namespace PharmacySystem.Controllers
             {
                 var medicine = await _unitOfWork.Medicines.GetByIdAsync(item.MedicineId);
 
-                // التأكد من وجود الدواء وتوفر الكمية المطلوبة
                 if (medicine == null || medicine.StockQuantity < item.Quantity)
                 {
                     ModelState.AddModelError("", $"The requested quantity for {(medicine?.Name ?? "selected medicine")} is not available in stock.");
@@ -104,15 +98,12 @@ namespace PharmacySystem.Controllers
                     return View(model);
                 }
 
-                // 1. خصم الكمية المباعة من المخزون
                 medicine.StockQuantity -= item.Quantity;
                 _unitOfWork.Medicines.Update(medicine);
 
-                // 2. حساب الإجمالي الفرعي للبند
                 decimal itemSubTotal = item.Quantity * item.UnitPrice;
                 subTotal += itemSubTotal;
 
-                // 3. إضافة البند للفاتورة
                 sale.SaleItems.Add(new SaleItem
                 {
                     MedicineId = item.MedicineId,
@@ -122,11 +113,9 @@ namespace PharmacySystem.Controllers
                 });
             }
 
-            // تجميع الحسابات النهائية
             sale.SubTotal = subTotal;
             sale.TotalAmount = subTotal - (model.Discount ?? 0);
 
-            // حفظ الفاتورة وتغييرات المخزون في عملية واحدة محصنة (Transaction)
             await _unitOfWork.Sales.AddAsync(sale);
             await _unitOfWork.CompleteAsync();
 

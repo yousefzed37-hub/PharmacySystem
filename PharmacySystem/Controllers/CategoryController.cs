@@ -22,16 +22,13 @@ namespace PharmacyManagement.Web.Controllers
 
        public async Task<IActionResult> Index()
         {
-            // 1. جلب كل الأقسام مع الأدوية المربوطة بيها بـ Include/Navigation Property
             var categories = await _unitOfWork.Categories.FindAllAsync(c => !c.IsDeleted, new[] { "Medicines" });
 
-            // 2. حساب عدد الأدوية غير الممسوحة لكل قسم
             var viewModels = categories.Select(c => new CategoryIndexViewModel
             {
                 Id = c.Id,
                 Name = c.Name,
                 Description = c.Description,
-                // هنا بيحسب العدد تلقائياً بناءً على الأدوية المربوطة بالقسم
                 MedicinesCount = c.Medicines != null ? c.Medicines.Count(m => !m.IsDeleted) : 0
             }).ToList();
 

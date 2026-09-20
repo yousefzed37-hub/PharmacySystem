@@ -112,28 +112,6 @@ namespace PharmacySystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //// POST: /Suppliers/Delete/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[Authorize(Roles = AppConstants.Roles.Admin)]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    var supplier = await _unitOfWork.Suppliers.GetByIdAsync(id);
-        //    if (supplier == null)
-        //        return Json(new { success = false, message = "Supplier not found." });
-
-        //    var relatedOrders = await _unitOfWork.PurchaseOrders.FindAllAsync(po => po.SupplierId == id);
-        //    if (relatedOrders.Any())
-        //    {
-        //        return Json(new { success = false, message = "Cannot delete supplier with existing purchase orders." });
-        //    }
-
-
-        //    _unitOfWork.Suppliers.Delete(supplier);
-        //    await _unitOfWork.CompleteAsync();
-
-        //    return Json(new { success = true, message = "Supplier deleted successfully." });
-        //}
 
     }
 }
