@@ -241,6 +241,10 @@ namespace PharmacyManagement.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+
+
+
         [HttpPost]
         public async Task<IActionResult> QuickCreate([FromBody] MedicineQuickCreateDto dto)
         {

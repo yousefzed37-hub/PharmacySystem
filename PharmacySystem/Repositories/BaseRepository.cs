@@ -25,6 +25,11 @@ namespace PharmacyManagement.Infrastructure.Repositories
             return await _dbSet.ToListAsync();
         }
 
+        public async Task<int> CountAsync(Expression<Func<T, bool>> criteria)
+        {
+            return await _context.Set<T>().CountAsync(criteria);
+        }
+
         public async Task<T?> FindAsync(Expression<Func<T, bool>> criteria, string[]? includes = null)
         {
             IQueryable<T> query = _dbSet;
